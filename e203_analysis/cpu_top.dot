@@ -1,0 +1,122 @@
+digraph cpu_top {
+    label = "cpu_top";
+    subgraph cluster_cpu_top_input {
+        cpu_top_input_pc_rtvec  [ shape=box, label="cpu_top_input_pc_rtvec", color="black", fontcolor="black" ];
+        cpu_top_input_core_mhartid  [ shape=box, label="cpu_top_input_core_mhartid", color="black", fontcolor="black" ];
+        cpu_top_input_ext_irq_a  [ shape=box, label="cpu_top_input_ext_irq_a", color="black", fontcolor="black" ];
+        cpu_top_input_sft_irq_a  [ shape=box, label="cpu_top_input_sft_irq_a", color="black", fontcolor="black" ];
+        cpu_top_input_tmr_irq_a  [ shape=box, label="cpu_top_input_tmr_irq_a", color="black", fontcolor="black" ];
+        cpu_top_input_tcm_sd  [ shape=box, label="cpu_top_input_tcm_sd", color="black", fontcolor="black" ];
+        cpu_top_input_tcm_ds  [ shape=box, label="cpu_top_input_tcm_ds", color="black", fontcolor="black" ];
+        cpu_top_input_test_mode  [ shape=box, label="cpu_top_input_test_mode", color="black", fontcolor="black" ];
+        cpu_top_input_clk  [ shape=box, label="cpu_top_input_clk", color="black", fontcolor="black" ];
+        cpu_top_input_rst_n  [ shape=box, label="cpu_top_input_rst_n", color="black", fontcolor="black" ];
+    }
+    subgraph cluster_cpu_top_output {
+        cpu_top_output_inspect_pc  [ shape=box, label="cpu_top_output_inspect_pc", color="black", fontcolor="black" ];
+        cpu_top_output_inspect_dbg_irq  [ shape=box, label="cpu_top_output_inspect_dbg_irq", color="black", fontcolor="black" ];
+        cpu_top_output_inspect_mem_cmd_valid  [ shape=box, label="cpu_top_output_inspect_mem_cmd_valid", color="black", fontcolor="black" ];
+        cpu_top_output_inspect_mem_cmd_ready  [ shape=box, label="cpu_top_output_inspect_mem_cmd_ready", color="black", fontcolor="black" ];
+        cpu_top_output_inspect_mem_rsp_valid  [ shape=box, label="cpu_top_output_inspect_mem_rsp_valid", color="black", fontcolor="black" ];
+        cpu_top_output_inspect_mem_rsp_ready  [ shape=box, label="cpu_top_output_inspect_mem_rsp_ready", color="black", fontcolor="black" ];
+        cpu_top_output_inspect_core_clk  [ shape=box, label="cpu_top_output_inspect_core_clk", color="black", fontcolor="black" ];
+        cpu_top_output_core_csr_clk  [ shape=box, label="cpu_top_output_core_csr_clk", color="black", fontcolor="black" ];
+        cpu_top_output_core_wfi  [ shape=box, label="cpu_top_output_core_wfi", color="black", fontcolor="black" ];
+        cpu_top_output_tm_stop  [ shape=box, label="cpu_top_output_tm_stop", color="black", fontcolor="black" ];
+    }
+    subgraph cluster_cpu_top_inout_interface {
+        cpu_top_inout_debug_interface  [ shape=box, label="cpu_top_inout_debug_interface", color="black", fontcolor="black" ];
+        cpu_top_inout_itcm_ext_interface  [ shape=box, label="cpu_top_inout_itcm_ext_interface", color="black", fontcolor="black" ];
+        cpu_top_inout_dtcm_ext_interface  [ shape=box, label="cpu_top_inout_dtcm_ext_interface", color="black", fontcolor="black" ];
+        cpu_top_inout_ppi_interface  [ shape=box, label="cpu_top_inout_ppi_interface", color="black", fontcolor="black" ];
+        cpu_top_inout_clint_interface  [ shape=box, label="cpu_top_inout_clint_interface", color="black", fontcolor="black" ];
+        cpu_top_inout_plic_interface  [ shape=box, label="cpu_top_inout_plic_interface", color="black", fontcolor="black" ];
+        cpu_top_inout_fio_interface  [ shape=box, label="cpu_top_inout_fio_interface", color="black", fontcolor="black" ];
+        cpu_top_inout_mem_interface  [ shape=box, label="cpu_top_inout_mem_interface", color="black", fontcolor="black" ];
+    }
+    subgraph cluster_cpu {
+        label = "cpu";
+        color = black;
+        subgraph cluster_cpu_input {
+            cpu_input_pc_rtvec  [ shape=box, label="cpu_input_pc_rtvec", color="black", fontcolor="black" ];
+            cpu_input_core_mhartid  [ shape=box, label="cpu_input_core_mhartid", color="black", fontcolor="black" ];
+            cpu_input_dbg_irq_a  [ shape=box, label="cpu_input_dbg_irq_a", color="black", fontcolor="black" ];
+            cpu_input_ext_irq_a  [ shape=box, label="cpu_input_ext_irq_a", color="black", fontcolor="black" ];
+            cpu_input_sft_irq_a  [ shape=box, label="cpu_input_sft_irq_a", color="black", fontcolor="black" ];
+            cpu_input_tmr_irq_a  [ shape=box, label="cpu_input_tmr_irq_a", color="black", fontcolor="black" ];
+            cpu_input_test_mode  [ shape=box, label="cpu_input_test_mode", color="black", fontcolor="black" ];
+            cpu_input_clk  [ shape=box, label="cpu_input_clk", color="black", fontcolor="black" ];
+            cpu_input_rst_n  [ shape=box, label="cpu_input_rst_n", color="black", fontcolor="black" ];
+        }
+        subgraph cluster_cpu_output {
+            cpu_output_inspect_pc  [ shape=box, label="cpu_output_inspect_pc", color="black", fontcolor="black" ];
+            cpu_output_inspect_dbg_irq  [ shape=box, label="cpu_output_inspect_dbg_irq", color="black", fontcolor="black" ];
+            cpu_output_inspect_mem_cmd_valid  [ shape=box, label="cpu_output_inspect_mem_cmd_valid", color="black", fontcolor="black" ];
+            cpu_output_inspect_mem_cmd_ready  [ shape=box, label="cpu_output_inspect_mem_cmd_ready", color="black", fontcolor="black" ];
+            cpu_output_inspect_mem_rsp_valid  [ shape=box, label="cpu_output_inspect_mem_rsp_valid", color="black", fontcolor="black" ];
+            cpu_output_inspect_mem_rsp_ready  [ shape=box, label="cpu_output_inspect_mem_rsp_ready", color="black", fontcolor="black" ];
+            cpu_output_inspect_core_clk  [ shape=box, label="cpu_output_inspect_core_clk", color="black", fontcolor="black" ];
+            cpu_output_core_csr_clk  [ shape=box, label="cpu_output_core_csr_clk", color="black", fontcolor="black" ];
+            cpu_output_rst_itcm  [ shape=box, label="cpu_output_rst_itcm", color="black", fontcolor="black" ];
+            cpu_output_rst_dtcm  [ shape=box, label="cpu_output_rst_dtcm", color="black", fontcolor="black" ];
+            cpu_output_core_wfi  [ shape=box, label="cpu_output_core_wfi", color="black", fontcolor="black" ];
+            cpu_output_tm_stop  [ shape=box, label="cpu_output_tm_stop", color="black", fontcolor="black" ];
+        }
+        subgraph cluster_cpu_inout_interface {
+            cpu_inout_debug_interface  [ shape=box, label="cpu_inout_debug_interface", color="black", fontcolor="black" ];
+            cpu_inout_itcm_ext_interface  [ shape=box, label="cpu_inout_itcm_ext_interface", color="black", fontcolor="black" ];
+            cpu_inout_dtcm_ext_interface  [ shape=box, label="cpu_inout_dtcm_ext_interface", color="black", fontcolor="black" ];
+            cpu_inout_ppi_interface  [ shape=box, label="cpu_inout_ppi_interface", color="black", fontcolor="black" ];
+            cpu_inout_clint_interface  [ shape=box, label="cpu_inout_clint_interface", color="black", fontcolor="black" ];
+            cpu_inout_plic_interface  [ shape=box, label="cpu_inout_plic_interface", color="black", fontcolor="black" ];
+            cpu_inout_fio_interface  [ shape=box, label="cpu_inout_fio_interface", color="black", fontcolor="black" ];
+            cpu_inout_mem_interface  [ shape=box, label="cpu_inout_mem_interface", color="black", fontcolor="black" ];
+            cpu_inout_itcm_interface  [ shape=box, label="cpu_inout_itcm_interface", color="black", fontcolor="black" ];
+            cpu_inout_dtcm_interface  [ shape=box, label="cpu_inout_dtcm_interface", color="black", fontcolor="black" ];
+        }
+    }
+    subgraph cluster_srams {
+        label = "srams";
+        color = black;
+        subgraph cluster_srams_inout_interface {
+            srams_inout_itcm_interface  [ shape=box, label="srams_inout_itcm_interface", color="black", fontcolor="black" ];
+            srams_inout_dtcm_interface  [ shape=box, label="srams_inout_dtcm_interface", color="black", fontcolor="black" ];
+        }
+    }
+    // cpu_top_input
+    cpu_top_input_pc_rtvec -> cpu_input_pc_rtvec  [ color="black" ];
+    cpu_top_input_core_mhartid -> cpu_input_core_mhartid  [ color="black" ];
+    cpu_top_input_ext_irq_a -> cpu_input_ext_irq_a  [ color="black" ];
+    cpu_top_input_sft_irq_a -> cpu_input_sft_irq_a  [ color="black" ];
+    cpu_top_input_tmr_irq_a -> cpu_input_tmr_irq_a  [ color="black" ];
+    cpu_top_input_tcm_sd -> srams_inout_itcm_interface  [ color="black" ];
+    cpu_top_input_tcm_sd -> srams_inout_dtcm_interface  [ color="black" ];
+    cpu_top_input_tcm_ds -> srams_inout_itcm_interface  [ color="black" ];
+    cpu_top_input_tcm_ds -> srams_inout_dtcm_interface  [ color="black" ];
+    cpu_top_input_test_mode -> cpu_input_test_mode  [ color="black" ];
+    cpu_top_input_clk -> cpu_input_clk  [ color="black" ];
+    cpu_top_input_rst_n -> cpu_input_rst_n  [ color="black" ];
+    // cpu_top_output
+    cpu_output_inspect_pc -> cpu_top_output_inspect_pc  [ color="black" ];
+    cpu_output_inspect_dbg_irq -> cpu_top_output_inspect_dbg_irq  [ color="black" ];
+    cpu_output_inspect_mem_cmd_valid -> cpu_top_output_inspect_mem_cmd_valid  [ color="black" ];
+    cpu_output_inspect_mem_cmd_ready -> cpu_top_output_inspect_mem_cmd_ready  [ color="black" ];
+    cpu_output_inspect_mem_rsp_valid -> cpu_top_output_inspect_mem_rsp_valid  [ color="black" ];
+    cpu_output_inspect_mem_rsp_ready -> cpu_top_output_inspect_mem_rsp_ready  [ color="black" ];
+    cpu_output_inspect_core_clk -> cpu_top_output_inspect_core_clk  [ color="black" ];
+    cpu_output_core_csr_clk -> cpu_top_output_core_csr_clk  [ color="black" ];
+    cpu_output_core_wfi -> cpu_top_output_core_wfi  [ color="black" ];
+    cpu_output_tm_stop -> cpu_top_output_tm_stop  [ color="black" ];
+    // cpu_top inout
+    cpu_top_inout_debug_interface -> cpu_inout_debug_interface  [ dir="both", style="bold", color="black" ];
+    cpu_top_inout_itcm_ext_interface -> cpu_inout_itcm_ext_interface  [ dir="both", style="bold", color="black" ];
+    cpu_top_inout_dtcm_ext_interface -> cpu_inout_dtcm_ext_interface  [ dir="both", style="bold", color="black" ];
+    cpu_top_inout_ppi_interface -> cpu_inout_ppi_interface  [ dir="both", style="bold", color="black" ];
+    cpu_top_inout_clint_interface -> cpu_inout_clint_interface  [ dir="both", style="bold", color="black" ];
+    cpu_top_inout_plic_interface -> cpu_inout_plic_interface  [ dir="both", style="bold", color="black" ];
+    cpu_top_inout_fio_interface -> cpu_inout_fio_interface  [ dir="both", style="bold", color="black" ];
+    cpu_top_inout_mem_interface -> cpu_inout_mem_interface  [ dir="both", style="bold", color="black" ];
+    // wire
+    cpu_inout_itcm_interface -> srams_inout_itcm_interface  [ dir="both", color="black" ];
+    cpu_inout_dtcm_interface -> srams_inout_dtcm_interface  [ dir="both", color="black" ];
+}
