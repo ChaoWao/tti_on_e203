@@ -1,0 +1,3 @@
+digraph cluster_srams_output {
+    label = "srams_output";
+}

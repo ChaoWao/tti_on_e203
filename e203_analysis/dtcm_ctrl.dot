@@ -1,0 +1,29 @@
+digraph cluster_dtcm_ctrl {
+label = "dtcm_ctrl";
+
+subgraph cluster_dtcm_ctrl_interface {
+label = "dtcm_ctrl_interface";
+
+subgraph cluster_dtcm_ctrl_input {
+    label = "dtcm_ctrl_input";
+    dtcm_ctrl_input_test_mode  [ shape=box, label="dtcm_ctrl_input_test_mode", color="black", fontcolor="black" ];
+    dtcm_ctrl_input_clk  [ shape=box, label="dtcm_ctrl_input_clk", color="black", fontcolor="black" ];
+    dtcm_ctrl_input_rst_n  [ shape=box, label="dtcm_ctrl_input_rst_n", color="black", fontcolor="black" ];
+    dtcm_ctrl_input_tcm_cgstop  [ shape=box, label="dtcm_ctrl_input_tcm_cgstop", color="black", fontcolor="black" ];
+}
+
+subgraph cluster_dtcm_ctrl_output {
+    label = "dtcm_ctrl_output";
+    dtcm_ctrl_output_dtcm_active  [ shape=box, label="dtcm_ctrl_output_dtcm_active", color="black", fontcolor="black" ];
+}
+
+subgraph cluster_dtcm_ctrl_inout {
+    label = "dtcm_ctrl_inout";
+    dtcm_ctrl_inout_lsu2dtcm_interface  [ shape=box, label="dtcm_ctrl_inout_lsu2dtcm_interface", color="black", fontcolor="black" ];
+    dtcm_ctrl_inout_ext2dtcm_interface  [ shape=box, label="dtcm_ctrl_inout_ext2dtcm_interface", color="black", fontcolor="black" ];
+    dtcm_ctrl_inout_dtcm_interface  [ shape=box, label="dtcm_ctrl_inout_dtcm_interface", color="black", fontcolor="black" ];
+}
+
+}
+
+}

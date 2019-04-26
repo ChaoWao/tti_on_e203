@@ -1,0 +1,13 @@
+digraph cluster_cpu_top_input {
+    label = "cpu_top_input";
+    cpu_top_input_pc_rtvec  [ shape=box, label="cpu_top_input_pc_rtvec", color="black", fontcolor="black" ];
+    cpu_top_input_core_mhartid  [ shape=box, label="cpu_top_input_core_mhartid", color="black", fontcolor="black" ];
+    cpu_top_input_ext_irq_a  [ shape=box, label="cpu_top_input_ext_irq_a", color="black", fontcolor="black" ];
+    cpu_top_input_sft_irq_a  [ shape=box, label="cpu_top_input_sft_irq_a", color="black", fontcolor="black" ];
+    cpu_top_input_tmr_irq_a  [ shape=box, label="cpu_top_input_tmr_irq_a", color="black", fontcolor="black" ];
+    cpu_top_input_tcm_sd  [ shape=box, label="cpu_top_input_tcm_sd", color="black", fontcolor="black" ];
+    cpu_top_input_tcm_ds  [ shape=box, label="cpu_top_input_tcm_ds", color="black", fontcolor="black" ];
+    cpu_top_input_test_mode  [ shape=box, label="cpu_top_input_test_mode", color="black", fontcolor="black" ];
+    cpu_top_input_clk  [ shape=box, label="cpu_top_input_clk", color="black", fontcolor="black" ];
+    cpu_top_input_rst_n  [ shape=box, label="cpu_top_input_rst_n", color="black", fontcolor="black" ];
+}

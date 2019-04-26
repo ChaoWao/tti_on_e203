@@ -1,0 +1,18 @@
+digraph cluster_core_input {
+    label = "core_input";
+    core_input_pc_rtvec  [ shape=box, label="core_input_pc_rtvec", color="black", fontcolor="black" ];
+    core_input_core_mhartid  [ shape=box, label="core_input_core_mhartid", color="black", fontcolor="black" ];
+    core_input_dbg_irq_r  [ shape=box, label="core_input_dbg_irq_r", color="black", fontcolor="black" ];
+    core_input_lcl_irq_r  [ shape=box, label="core_input_lcl_irq_r(Always 0)", color="black", fontcolor="black" ];
+    core_input_evt_r  [ shape=box, label="core_input_evt_r(Always 0)", color="black", fontcolor="black" ];
+    core_input_ext_irq_r  [ shape=box, label="core_input_ext_irq_r", color="black", fontcolor="black" ];
+    core_input_sft_irq_r  [ shape=box, label="core_input_sft_irq_r", color="black", fontcolor="black" ];
+    core_input_tmr_irq_r  [ shape=box, label="core_input_tmr_irq_r", color="black", fontcolor="black" ];
+    core_input_clk_core_ifu  [ shape=box, label="core_input_clk_core_ifu", color="black", fontcolor="black" ];
+    core_input_clk_core_exu  [ shape=box, label="core_input_clk_core_exu", color="black", fontcolor="black" ];
+    core_input_clk_core_lsu  [ shape=box, label="core_input_clk_core_lsu", color="black", fontcolor="black" ];
+    core_input_clk_core_biu  [ shape=box, label="core_input_clk_core_biu", color="black", fontcolor="black" ];
+    core_input_clk_aon  [ shape=box, label="core_input_clk_aon", color="black", fontcolor="black" ];
+    core_input_test_mode  [ shape=box, label="core_input_test_mode", color="black", fontcolor="black" ];
+    core_input_rst_n  [ shape=box, label="core_input_rst_n", color="black", fontcolor="black" ];
+}

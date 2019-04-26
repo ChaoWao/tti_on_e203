@@ -1,0 +1,24 @@
+digraph cluster_extend_csr {
+label = "extend_csr(Empty Module)";
+
+subgraph cluster_extend_csr_interface {
+label = "extend_csr_interface";
+
+subgraph cluster_extend_csr_input {
+    label = "extend_csr_input";
+    extend_csr_input_clk  [ shape=box, label="extend_csr_input_clk", color="black", fontcolor="black" ];
+    extend_csr_input_rst_n  [ shape=box, label="extend_csr_input_rst_n", color="black", fontcolor="black" ];
+}
+
+subgraph cluster_extend_csr_output {
+    label = "extend_csr_output";
+}
+
+subgraph cluster_extend_csr_inout {
+    label = "extend_csr_inout";
+    extend_csr_inout_eai_csr_interface  [ shape=box, label="extend_csr_inout_eai_csr_interface", color="black", fontcolor="black" ];
+}
+
+}
+
+}

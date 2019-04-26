@@ -1,0 +1,28 @@
+digraph cluster_reset_ctrl {
+label = "reset_ctrl";
+
+subgraph cluster_reset_ctrl_interface {
+label = "reset_ctrl_interface";
+
+subgraph cluster_reset_ctrl_input {
+    label = "reset_ctrl_input";
+    reset_ctrl_input_clk  [ shape=box, label="reset_ctrl_input_clk", color="black", fontcolor="black" ];
+    reset_ctrl_input_rst_n  [ shape=box, label="reset_ctrl_input_rst_n", color="black", fontcolor="black" ];
+    reset_ctrl_input_test_mode  [ shape=box, label="reset_ctrl_input_test_mode", color="black", fontcolor="black" ];
+}
+
+subgraph cluster_reset_ctrl_output {
+    label = "reset_ctrl_output";
+    reset_ctrl_output_rst_core  [ shape=box, label="reset_ctrl_output_rst_core", color="black", fontcolor="black" ];
+    reset_ctrl_output_rst_itcm  [ shape=box, label="reset_ctrl_output_rst_itcm", color="black", fontcolor="black" ];
+    reset_ctrl_output_rst_dtcm  [ shape=box, label="reset_ctrl_output_rst_dtcm", color="black", fontcolor="black" ];
+    reset_ctrl_output_rst_aon  [ shape=box, label="reset_ctrl_output_rst_aon", color="black", fontcolor="black" ];
+}
+
+subgraph cluster_reset_ctrl_inout {
+    label = "reset_ctrl_inout";
+}
+
+}
+
+}
