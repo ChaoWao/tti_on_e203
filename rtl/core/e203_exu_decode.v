@@ -93,6 +93,9 @@ module e203_exu_decode(
   wire [4:0]  rv32_rs1    = rv32_instr[19:15];
   wire [4:0]  rv32_rs2    = rv32_instr[24:20];
   wire [6:0]  rv32_func7  = rv32_instr[31:25];
+  `ifdef E203_SUPPORT_TTIO
+  wire [4:0]  rv32_rs3    = rv32_rd;
+  `endif
 
   wire [4:0]  rv16_rd     = rv32_rd;
   wire [4:0]  rv16_rs1    = rv16_rd; 
@@ -169,6 +172,9 @@ module e203_exu_decode(
   wire rv32_rs2_x1 = (rv32_rs2 == 5'b00001);
   wire rv32_rd_x0  = (rv32_rd  == 5'b00000);
   wire rv32_rd_x2  = (rv32_rd  == 5'b00010);
+  `ifdef E203_SUPPORT_TTIO
+  wire rv32_rs3_x0 = (rv32_rs3 == 5'b00000);
+  `endif
 
   wire rv16_rs1_x0 = (rv16_rs1 == 5'b00000);
   wire rv16_rs2_x0 = (rv16_rs2 == 5'b00000);
@@ -178,6 +184,9 @@ module e203_exu_decode(
   wire rv32_rs1_x31 = (rv32_rs1 == 5'b11111);
   wire rv32_rs2_x31 = (rv32_rs2 == 5'b11111);
   wire rv32_rd_x31  = (rv32_rd  == 5'b11111);
+  `ifdef E203_SUPPORT_TTIO
+  wire rv32_rs3_x31 = (rv32_rs3 == 5'b11111);
+  `endif
 
   wire rv32_load     = opcode_6_5_00 & opcode_4_2_000 & opcode_1_0_11; 
   wire rv32_store    = opcode_6_5_01 & opcode_4_2_000 & opcode_1_0_11; 
@@ -301,6 +310,30 @@ module e203_exu_decode(
   
  
 
+
+`ifdef E203_SUPPORT_TTIO
+  // ===========================================================================
+  // TTIO Instructions
+  wire rv32_setti = rv32_custom0 & rv32_func7_0000000 & rv32_func3_000;
+  wire rv32_settr = rv32_custom0 & rv32_func7_0000000 & rv32_func3_001;
+  wire rv32_getti = rv32_custom0 & rv32_func7_0000000 & rv32_func3_010;
+  wire rv32_ttiat = rv32_custom0 & rv32_func7_0000000 & rv32_func3_011;
+  wire rv32_ttoat = rv32_custom0 & rv32_func7_0000000 & rv32_func3_100;
+  wire rv32_ttiaf = rv32_custom0 & rv32_func7_0000000 & rv32_func3_101;
+  wire rv32_ttoaf = rv32_custom0 & rv32_func7_0000000 & rv32_func3_110;
+
+  wire [`E203_DECINFO_TTIO_WIDTH-1:0] ttio_info_bus;
+  assign ttio_info_bus[`E203_DECINFO_GRP    ]    = `E203_DECINFO_GRP_TTIO;
+  assign ttio_info_bus[`E203_DECINFO_RV32   ]    = rv32;
+  assign ttio_info_bus[`E203_DECINFO_TTIO_SETTI ]  = rv32_setti;
+  assign ttio_info_bus[`E203_DECINFO_TTIO_SETTR]  = rv32_settr;
+  assign ttio_info_bus[`E203_DECINFO_TTIO_GETTI  ]  = rv32_getti;
+  assign ttio_info_bus[`E203_DECINFO_TTIO_TTIAT  ]  = rv32_ttiat;
+  assign ttio_info_bus[`E203_DECINFO_TTIO_TTOAT  ]  = rv32_ttoat; 
+  assign ttio_info_bus[`E203_DECINFO_TTIO_TTIAF  ]  = rv32_ttiaf;
+  assign ttio_info_bus[`E203_DECINFO_TTIO_TTOAF ]  = rv32_ttoaf;
+
+`endif
 
   // ===========================================================================
   // Branch Instructions
@@ -620,7 +653,10 @@ module e203_exu_decode(
                     (
                       (~rv32_branch) & (~rv32_store)
                     & (~rv32_fence_fencei)
-                    & (~rv32_ecall_ebreak_ret_wfi) 
+                    & (~rv32_ecall_ebreak_ret_wfi)
+                    `ifdef E203_SUPPORT_TTIO
+                    & (~rv32_setti) & (~rv32_settr) & (~rv32_ttoat) & (~rv32_ttoaf)
+                    `endif
                     )
                    );
 
@@ -644,6 +680,9 @@ module e203_exu_decode(
                     & (~rv32_csrrwi)
                     & (~rv32_csrrsi)
                     & (~rv32_csrrci)
+                    `ifdef E203_SUPPORT_TTIO
+                    & (~rv32_getti)
+                    `endif
                     )
                   );
                     
@@ -658,8 +697,15 @@ module e203_exu_decode(
                | (rv32_store)
                | (rv32_op)
                | (rv32_amo & (~rv32_lr_w))
+               `ifdef E203_SUPPORT_TTIO
+               | (rv32_ttiat) | (rv32_ttoat) | (rv32_ttiaf) | (rv32_ttoaf)
+               `endif
                  )
                  );
+
+  `ifdef E203_SUPPORT_TTIO
+  wire rv32_need_rs3 = 
+  `endif 
 
   wire [31:0]  rv32_i_imm = { 
                                {20{rv32_instr[31]}} 

@@ -1,55 +1,23 @@
- /*                                                                      
- Copyright 2018 Nuclei System Technology, Inc.                
-                                                                         
- Licensed under the Apache License, Version 2.0 (the "License");         
- you may not use this file except in compliance with the License.        
- You may obtain a copy of the License at                                 
-                                                                         
-     http://www.apache.org/licenses/LICENSE-2.0                          
-                                                                         
-  Unless required by applicable law or agreed to in writing, software    
- distributed under the License is distributed on an "AS IS" BASIS,       
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and     
- limitations under the License.                                          
- */                                                                      
-                                                                         
-                                                                         
-                                                                         
-//=====================================================================
-//
-// Designer   : Bob Hu
-//
-// Description:
-//  The ALU module to implement the compute function unit
-//    and the AGU (address generate unit) for LSU is also handled by ALU
-//    additionaly, the shared-impelmentation of MUL and DIV instruction 
-//    is also shared by ALU in E200
-//
-// ====================================================================
 `include "e203_defines.v"
 
 module e203_exu_alu(
-
-  //////////////////////////////////////////////////////////////
-  // The operands and decode info from dispatch
   input  i_valid, 
   output i_ready, 
+  output i_longpipe,
 
-  output i_longpipe, // Indicate this instruction is 
-                     //   issued as a long pipe instruction
 
-  `ifdef E203_HAS_CSR_EAI//{
+  `ifdef E203_HAS_CSR_EAI
   `ifndef E203_HAS_EAI
   input  eai_xs_off,
-  `endif//
+  `endif
   output         eai_csr_valid,
   input          eai_csr_ready,
   output  [31:0] eai_csr_addr,
   output         eai_csr_wr,
   output  [31:0] eai_csr_wdata,
   input   [31:0] eai_csr_rdata,
-  `endif//}
+  `endif
+
 
   output amo_wait,
   input  oitf_empty,
@@ -69,20 +37,18 @@ module e203_exu_alu(
   input  i_buserr,
   input  i_misalgn,
 
+
   input  flush_req,
   input  flush_pulse,
 
-  //////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////
-  // The Commit Interface
-  output cmt_o_valid, // Handshake valid
-  input  cmt_o_ready, // Handshake ready
+
+  output cmt_o_valid,
+  input  cmt_o_ready,
   output cmt_o_pc_vld,  
   output [`E203_PC_SIZE-1:0] cmt_o_pc,  
   output [`E203_INSTR_SIZE-1:0] cmt_o_instr,  
-  output [`E203_XLEN-1:0]    cmt_o_imm,// The resolved ture/false
-    //   The Branch and Jump Commit
-  output cmt_o_rv32,// The predicted ture/false  
+  output [`E203_XLEN-1:0] cmt_o_imm,
+  output cmt_o_rv32,
   output cmt_o_bjp,
   output cmt_o_mret,
   output cmt_o_dret,
@@ -93,45 +59,57 @@ module e203_exu_alu(
   output cmt_o_ifu_misalgn,
   output cmt_o_ifu_buserr,
   output cmt_o_ifu_ilegl,
-  output cmt_o_bjp_prdt,// The predicted ture/false  
-  output cmt_o_bjp_rslv,// The resolved ture/false
-    //   The AGU Exception 
-  output cmt_o_misalgn, // The misalign exception generated
+  output cmt_o_bjp_prdt,
+  output cmt_o_bjp_rslv,
+  output cmt_o_misalgn,
   output cmt_o_ld,
   output cmt_o_stamo,
-  output cmt_o_buserr , // The bus-error exception generated
+  output cmt_o_buserr,
   output [`E203_ADDR_SIZE-1:0] cmt_o_badaddr,
 
 
-  //////////////////////////////////////////////////////////////
-  // The ALU Write-Back Interface
-  output wbck_o_valid, // Handshake valid
-  input  wbck_o_ready, // Handshake ready
+  output wbck_o_valid,
+  input  wbck_o_ready,
   output [`E203_XLEN-1:0] wbck_o_wdat,
   output [`E203_RFIDX_WIDTH-1:0] wbck_o_rdidx,
   
+
   input  mdv_nob2b,
 
-  //////////////////////////////////////////////////////////////
-  // The CSR Interface
+
   output csr_ena,
   output csr_wr_en,
   output csr_rd_en,
   output [12-1:0] csr_idx,
-
   input  nonflush_cmt_ena,
   input  csr_access_ilgl,
   input  [`E203_XLEN-1:0] read_csr_dat,
   output [`E203_XLEN-1:0] wbck_csr_dat,
 
-  //////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////
-  // The AGU ICB Interface to LSU-ctrl
-  //    * Bus cmd channel
-  output                         agu_icb_cmd_valid, // Handshake valid
-  input                          agu_icb_cmd_ready, // Handshake ready
-  output [`E203_ADDR_SIZE-1:0]   agu_icb_cmd_addr, // Bus transaction start addr 
-  output                         agu_icb_cmd_read,   // Read or write
+
+`ifdef TTIO
+  output                         icb_cmd_valid,
+  input                          icb_cmd_ready,
+  output [`E203_ADDR_SIZE-1:0]   icb_cmd_addr,
+  output                         icb_cmd_read,
+  output [`E203_XLEN-1:0]        icb_cmd_wdata, 
+  output [`E203_XLEN/8-1:0]      icb_cmd_wmask, 
+  output                         icb_cmd_lock,
+  output                         icb_cmd_excl,
+  output [1:0]                   icb_cmd_size,
+  output                         icb_cmd_back, 
+  output                         icb_cmd_usign,
+  output [`E203_ITAG_WIDTH -1:0] icb_cmd_itag,
+  input                          icb_rsp_valid,
+  output                         icb_rsp_ready,
+  input                          icb_rsp_err  ,
+  input                          icb_rsp_excl_ok,
+  input  [`E203_XLEN-1:0]        icb_rsp_rdata,
+`else
+  output                         agu_icb_cmd_valid,
+  input                          agu_icb_cmd_ready,
+  output [`E203_ADDR_SIZE-1:0]   agu_icb_cmd_addr,
+  output                         agu_icb_cmd_read,
   output [`E203_XLEN-1:0]        agu_icb_cmd_wdata, 
   output [`E203_XLEN/8-1:0]      agu_icb_cmd_wmask, 
   output                         agu_icb_cmd_lock,
@@ -140,13 +118,12 @@ module e203_exu_alu(
   output                         agu_icb_cmd_back2agu, 
   output                         agu_icb_cmd_usign,
   output [`E203_ITAG_WIDTH -1:0] agu_icb_cmd_itag,
-  //    * Bus RSP channel
-  input                          agu_icb_rsp_valid, // Response valid 
-  output                         agu_icb_rsp_ready, // Response ready
-  input                          agu_icb_rsp_err  , // Response error
+  input                          agu_icb_rsp_valid,
+  output                         agu_icb_rsp_ready,
+  input                          agu_icb_rsp_err  ,
   input                          agu_icb_rsp_excl_ok,
   input  [`E203_XLEN-1:0]        agu_icb_rsp_rdata,
-
+`endif
 
 
   input  clk,
@@ -159,6 +136,11 @@ module e203_exu_alu(
   // Dispatch to different sub-modules according to their types
 
   wire ifu_excp_op = i_ilegl | i_buserr | i_misalgn;
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+  wire ttio_op = (~ifu_excp_op) & (i_info[`E203_DECINFO_GRP]) == `E203_DECINFO_GRP_TTIO);
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
   wire alu_op = (~ifu_excp_op) & (i_info[`E203_DECINFO_GRP] == `E203_DECINFO_GRP_ALU); 
   wire agu_op = (~ifu_excp_op) & (i_info[`E203_DECINFO_GRP] == `E203_DECINFO_GRP_AGU); 
   wire bjp_op = (~ifu_excp_op) & (i_info[`E203_DECINFO_GRP] == `E203_DECINFO_GRP_BJP); 
@@ -176,6 +158,11 @@ module e203_exu_alu(
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
   wire mdv_i_valid = i_valid & mdv_op;
 `endif//E203_SUPPORT_SHARE_MULDIV}
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+  wire ttio_i_valid = i_valid & ttio_op;
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
   wire agu_i_valid = i_valid & agu_op;
   wire alu_i_valid = i_valid & alu_op;
   wire bjp_i_valid = i_valid & bjp_op;
@@ -185,6 +172,11 @@ module e203_exu_alu(
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
   wire mdv_i_ready;
 `endif//E203_SUPPORT_SHARE_MULDIV}
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+  wire ttio_i_ready;
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
   wire agu_i_ready;
   wire alu_i_ready;
   wire bjp_i_ready;
@@ -195,12 +187,22 @@ module e203_exu_alu(
                    `ifdef E203_SUPPORT_SHARE_MULDIV //{
                    | (mdv_i_ready & mdv_op)
                    `endif//E203_SUPPORT_SHARE_MULDIV}
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+                   | (ttio_i_ready & ttio_op)
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
                    | (alu_i_ready & alu_op)
                    | (ifu_excp_i_ready & ifu_excp_op)
                    | (bjp_i_ready & bjp_op)
                    | (csr_i_ready & csr_op)
                      ;
 
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+  wire ttio_i_longpipe;
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
   wire agu_i_longpipe;
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
   wire mdv_i_longpipe;
@@ -210,7 +212,61 @@ module e203_exu_alu(
                    `ifdef E203_SUPPORT_SHARE_MULDIV //{
                     | (mdv_i_longpipe & mdv_op) 
                    `endif//E203_SUPPORT_SHARE_MULDIV}
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+                    | (ttio_i_longpipe & ttio_op) 
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
                    ;
+
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+  wire ttio_o_amo_wait;
+  wire agu_o_amo_wait;
+  assign amo_wait =    (agu_op & agu_o_amo_wait) | (ttio_op & ttio_o_amo_wait);
+  
+  assign icb_cmd_valid = (agu_op & agu_icb_cmd_valid) | (ttio_op & ttio_icb_cmd_valid);
+  
+  assign agu_icb_cmd_ready = (icb_cmd_ready & agu_op);
+  assign ttio_icb_cmd_ready = (icb_cmd_ready & ttio_op);
+  
+  assign icb_cmd_valid = (agu_icb_cmd_valid & agu_op) | (ttio_icb_cmd_valid & ttio_op);
+  
+  assign icb_cmd_addr = ({`E203_ADDR_SIZE{agu_op}} & agu_icb_cmd_addr) | ({`E203_ADDR_SIZE{ttio_op}} & ttio_icb_cmd_addr);
+
+  assign icb_cmd_read = (agu_icb_cmd_read & agu_op) | (ttio_icb_cmd_read & ttio_op);
+  
+  assign icb_cmd_wdata = ({`E203_XLEN{agu_op}} & agu_icb_cmd_wdata) | (({`E203_XLEN{ttio_op}} & ttio_icb_cmd_wdata);
+  
+  assign icb_cmd_wmask = ({(`E203_XLEN/8){agu_op}} & agu_icb_cmd_wmask) | (({(`E203_XLEN/8){ttio_op}} & ttio_icb_cmd_wmask);
+  
+  assign icb_cmd_lock = (agu_op & agu_icb_cmd_lock) | (ttio_op & ttio_icb_cmd_lock);
+  
+  assign icb_cmd_excl = (agu_op & agu_icb_cmd_excl) | (ttio_op & ttio_icb_cmd_excl);
+  
+  assign icb_cmd_size = ({2{agu_op}} & agu_icb_cmd_size) | ({2{ttio_op}} & ttio_icb_cmd_size);
+
+  assign icb_cmd_back = (agu_op & agu_icb_cmd_back2agu) | (ttio_op & ttio_icb_cmd_back2ttio);
+
+  assign icb_cmd_usign = (agu_op & agu_icb_cmd_usign) | (ttio_op & ttio_icb_cmd_usign);
+
+  assign icb_cmd_itag = ({`E203_ITAG_WIDTH{agu_op}} & agu_icb_cmd_itag) | (({`E203_ITAG_WIDTH{ttio_op}} & ttio_icb_cmd_itag);
+
+  assign agu_icb_rsp_valid = (icb_rsp_valid & agu_op);
+  assign ttio_icb_rsp_valid = (icb_rsp_valid & ttio_op);
+
+  assign icb_rsp_ready = (agu_op & agu_icb_rsp_ready) | (ttio_op & ttio_icb_rsp_ready);
+
+  assign agu_icb_rsp_err = (icb_rsp_err & agu_op);
+  assign ttio_icb_rsp_err = (icb_rsp_err & ttio_op);
+
+  assign agu_icb_rsp_excl_ok = (icb_rsp_excl_ok & agu_op);
+  assign ttio_icb_rsp_excl_ok = (icb_rsp_excl_ok & ttio_op);
+
+  assign agu_icb_rsp_rdata = (icb_rsp_rdata & {`E203_XLEN{agu_op}});
+  assign ttio_icb_rsp_rdata = (icb_rsp_rdata & {`E203_XLEN{ttio_op}});
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////
   // Instantiate the CSR module
@@ -341,6 +397,143 @@ module e203_exu_alu(
 
 
 
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+  //////////////////////////////////////////////////////////////
+  // Instantiate the TTIO module
+  //
+  wire ttio_o_valid; 
+  wire ttio_o_ready; 
+  
+  wire [`E203_XLEN-1:0] ttio_o_wbck_wdat;
+  wire ttio_o_wbck_err;   
+  
+  wire ttio_o_cmt_misalgn; 
+  wire ttio_o_cmt_ld; 
+  wire ttio_o_cmt_stamo; 
+  wire ttio_o_cmt_buserr ; 
+  wire [`E203_ADDR_SIZE-1:0] ttio_o_cmt_badaddr ; 
+  
+  wire [`E203_XLEN-1:0] ttio_req_alu_op1;
+  wire [`E203_XLEN-1:0] ttio_req_alu_op2;
+  wire ttio_req_alu_swap;
+  wire ttio_req_alu_add ;
+  wire ttio_req_alu_and ;
+  wire ttio_req_alu_or  ;
+  wire ttio_req_alu_xor ;
+  wire ttio_req_alu_max ;
+  wire ttio_req_alu_min ;
+  wire ttio_req_alu_maxu;
+  wire ttio_req_alu_minu;
+  wire [`E203_XLEN-1:0] ttio_req_alu_res;
+     
+  wire ttio_sbf_0_ena;
+  wire [`E203_XLEN-1:0] ttio_sbf_0_nxt;
+  wire [`E203_XLEN-1:0] ttio_sbf_0_r;
+  wire ttio_sbf_1_ena;
+  wire [`E203_XLEN-1:0] ttio_sbf_1_nxt;
+  wire [`E203_XLEN-1:0] ttio_sbf_1_r;
+
+  wire  [`E203_XLEN-1:0]           ttio_i_rs1  = {`E203_XLEN         {ttio_op}} & i_rs1;
+  wire  [`E203_XLEN-1:0]           ttio_i_rs2  = {`E203_XLEN         {ttio_op}} & i_rs2;
+  wire  [`E203_XLEN-1:0]           ttio_i_imm  = {`E203_XLEN         {ttio_op}} & i_imm;
+  wire  [`E203_DECINFO_WIDTH-1:0]  ttio_i_info = {`E203_DECINFO_WIDTH{ttio_op}} & i_info;  
+  wire  [`E203_ITAG_WIDTH-1:0]     ttio_i_itag = {`E203_ITAG_WIDTH   {ttio_op}} & i_itag; 
+
+  wire                         ttio_icb_cmd_valid, // Handshake valid
+  wire                          ttio_icb_cmd_ready, // Handshake ready
+  wire [`E203_ADDR_SIZE-1:0]   ttio_icb_cmd_addr, // Bus transaction start addr 
+  wire                         ttio_icb_cmd_read,   // Read or write
+  wire [`E203_XLEN-1:0]        ttio_icb_cmd_wdata, 
+  wire [`E203_XLEN/8-1:0]      ttio_icb_cmd_wmask, 
+  wire                         ttio_icb_cmd_lock,
+  wire                         ttio_icb_cmd_excl,
+  wire [1:0]                   ttio_icb_cmd_size,
+  wire                         ttio_icb_cmd_back2ttio, 
+  wire                         ttio_icb_cmd_usign,
+  wire [`E203_ITAG_WIDTH -1:0] ttio_icb_cmd_itag,
+  //    * Bus RSP channel
+  wire                          ttio_icb_rsp_valid, // Response valid 
+  wire                         ttio_icb_rsp_ready, // Response ready
+  wire                          ttio_icb_rsp_err  , // Response error
+  wire                          ttio_icb_rsp_excl_ok,
+  wire  [`E203_XLEN-1:0]        ttio_icb_rsp_rdata,
+
+  ttio u_ttio(
+
+      .ttio_i_valid         (ttio_i_valid     ),
+      .ttio_i_ready         (ttio_i_ready     ),
+      .ttio_i_rs1           (ttio_i_rs1       ),
+      .ttio_i_rs2           (ttio_i_rs2       ),
+      .ttio_i_imm           (ttio_i_imm       ),
+      .ttio_i_info          (ttio_i_info[`E203_DECINFO_TTIO_WIDTH-1:0]),
+      .ttio_i_longpipe      (ttio_i_longpipe  ),
+      .ttio_i_itag          (ttio_i_itag      ),
+
+      .ttio_i_flush_pulse         (flush_pulse),
+      .ttio_i_flush_req           (flush_req),
+      .ttio_o_amo_wait            (ttio_o_amo_wait),
+      .ttio_i_oitf_empty          (oitf_empty),
+
+      .ttio_o_valid         (ttio_o_valid         ),
+      .ttio_o_ready         (ttio_o_ready         ),
+      .ttio_o_wbck_wdat     (ttio_o_wbck_wdat     ),
+      .ttio_o_wbck_err      (ttio_o_wbck_err      ),
+      .ttio_o_cmt_misalgn   (ttio_o_cmt_misalgn   ),
+      .ttio_o_cmt_ld        (ttio_o_cmt_ld        ),
+      .ttio_o_cmt_stamo     (ttio_o_cmt_stamo     ),
+      .ttio_o_cmt_buserr    (ttio_o_cmt_buserr    ),
+      .ttio_o_cmt_badaddr   (ttio_o_cmt_badaddr   ),
+                                                
+      .ttio_icb_cmd_valid   (ttio_icb_cmd_valid   ),
+      .ttio_icb_cmd_ready   (ttio_icb_cmd_ready   ),
+      .ttio_icb_cmd_addr    (ttio_icb_cmd_addr    ),
+      .ttio_icb_cmd_read    (ttio_icb_cmd_read    ),
+      .ttio_icb_cmd_wdata   (ttio_icb_cmd_wdata   ),
+      .ttio_icb_cmd_wmask   (ttio_icb_cmd_wmask   ),
+      .ttio_icb_cmd_lock    (ttio_icb_cmd_lock    ),
+      .ttio_icb_cmd_excl    (ttio_icb_cmd_excl    ),
+      .ttio_icb_cmd_size    (ttio_icb_cmd_size    ),
+      .ttio_icb_cmd_back2ttio(ttio_icb_cmd_back2ttio),
+      .ttio_icb_cmd_usign   (ttio_icb_cmd_usign   ),
+      .ttio_icb_cmd_itag    (ttio_icb_cmd_itag    ),
+      .ttio_icb_rsp_valid   (ttio_icb_rsp_valid   ),
+      .ttio_icb_rsp_ready   (ttio_icb_rsp_ready   ),
+      .ttio_icb_rsp_err     (ttio_icb_rsp_err     ),
+      .ttio_icb_rsp_excl_ok (ttio_icb_rsp_excl_ok ),
+      .ttio_icb_rsp_rdata   (ttio_icb_rsp_rdata   ),
+                                                
+      .ttio_req_alu_op1     (ttio_req_alu_op1     ),
+      .ttio_req_alu_op2     (ttio_req_alu_op2     ),
+      .ttio_req_alu_swap    (ttio_req_alu_swap    ),
+      .ttio_req_alu_add     (ttio_req_alu_add     ),
+      .ttio_req_alu_and     (ttio_req_alu_and     ),
+      .ttio_req_alu_or      (ttio_req_alu_or      ),
+      .ttio_req_alu_xor     (ttio_req_alu_xor     ),
+      .ttio_req_alu_max     (ttio_req_alu_max     ),
+      .ttio_req_alu_min     (ttio_req_alu_min     ),
+      .ttio_req_alu_maxu    (ttio_req_alu_maxu    ),
+      .ttio_req_alu_minu    (ttio_req_alu_minu    ),
+      .ttio_req_alu_res     (ttio_req_alu_res     ),
+                                                
+      .ttio_sbf_0_ena       (ttio_sbf_0_ena       ),
+      .ttio_sbf_0_nxt       (ttio_sbf_0_nxt       ),
+      .ttio_sbf_0_r         (ttio_sbf_0_r         ),
+                                                
+      .ttio_sbf_1_ena       (ttio_sbf_1_ena       ),
+      .ttio_sbf_1_nxt       (ttio_sbf_1_nxt       ),
+      .ttio_sbf_1_r         (ttio_sbf_1_r         ),
+     
+      .clk                 (clk),
+      .rst_n               (rst_n)
+  );
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
+
+
+
   
   //////////////////////////////////////////////////////////////
   // Instantiate the AGU module
@@ -383,6 +576,28 @@ module e203_exu_alu(
   wire  [`E203_DECINFO_WIDTH-1:0]  agu_i_info = {`E203_DECINFO_WIDTH{agu_op}} & i_info;  
   wire  [`E203_ITAG_WIDTH-1:0]     agu_i_itag = {`E203_ITAG_WIDTH   {agu_op}} & i_itag;  
 
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+  wire                         agu_icb_cmd_valid, // Handshake valid
+  wire                          agu_icb_cmd_ready, // Handshake ready
+  wire [`E203_ADDR_SIZE-1:0]   agu_icb_cmd_addr, // Bus transaction start addr 
+  wire                         agu_icb_cmd_read,   // Read or write
+  wire [`E203_XLEN-1:0]        agu_icb_cmd_wdata, 
+  wire [`E203_XLEN/8-1:0]      agu_icb_cmd_wmask, 
+  wire                         agu_icb_cmd_lock,
+  wire                         agu_icb_cmd_excl,
+  wire [1:0]                   agu_icb_cmd_size,
+  wire                         agu_icb_cmd_back2agu, 
+  wire                         agu_icb_cmd_usign,
+  wire [`E203_ITAG_WIDTH -1:0] agu_icb_cmd_itag,
+  //    * Bus RSP channel
+  wire                          agu_icb_rsp_valid, // Response valid 
+  wire                         agu_icb_rsp_ready, // Response ready
+  wire                          agu_icb_rsp_err  , // Response error
+  wire                          agu_icb_rsp_excl_ok,
+  wire  [`E203_XLEN-1:0]        agu_icb_rsp_rdata,
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
 
   e203_exu_alu_lsuagu u_e203_exu_alu_lsuagu(
 
@@ -397,7 +612,13 @@ module e203_exu_alu(
 
       .flush_pulse         (flush_pulse    ),
       .flush_req           (flush_req      ),
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+      .amo_wait            (agu_o_amo_wait),
+`else
       .amo_wait            (amo_wait),
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
       .oitf_empty          (oitf_empty),
 
       .agu_o_valid         (agu_o_valid         ),
@@ -633,7 +854,33 @@ module e203_exu_alu(
       .bjp_req_alu_add     (bjp_req_alu_add       ),
       .bjp_req_alu_cmp_res (bjp_req_alu_cmp_res   ),
       .bjp_req_alu_add_res (bjp_req_alu_add_res   ),
-             
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO             
+      .ttio_req_alu         (ttio_req_alu           ),
+      .ttio_req_alu_op1     (ttio_req_alu_op1       ),
+      .ttio_req_alu_op2     (ttio_req_alu_op2       ),
+      .ttio_req_alu_swap    (ttio_req_alu_swap      ),
+      .ttio_req_alu_add     (ttio_req_alu_add       ),
+      .ttio_req_alu_and     (ttio_req_alu_and       ),
+      .ttio_req_alu_or      (ttio_req_alu_or        ),
+      .ttio_req_alu_xor     (ttio_req_alu_xor       ),
+      .ttio_req_alu_max     (ttio_req_alu_max       ),
+      .ttio_req_alu_min     (ttio_req_alu_min       ),
+      .ttio_req_alu_maxu    (ttio_req_alu_maxu      ),
+      .ttio_req_alu_minu    (ttio_req_alu_minu      ),
+      .ttio_req_alu_res     (ttio_req_alu_res       ),
+
+      .ttio_sbf_0_ena       (ttio_sbf_0_ena         ),
+      .ttio_sbf_0_nxt       (ttio_sbf_0_nxt         ),
+      .ttio_sbf_0_r         (ttio_sbf_0_r           ),
+            
+      .ttio_sbf_1_ena       (ttio_sbf_1_ena         ),
+      .ttio_sbf_1_nxt       (ttio_sbf_1_nxt         ),
+      .ttio_sbf_1_r         (ttio_sbf_1_r           ),      
+`endif
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
       .agu_req_alu         (agu_req_alu           ),
       .agu_req_alu_op1     (agu_req_alu_op1       ),
       .agu_req_alu_op2     (agu_req_alu_op2       ),
@@ -695,6 +942,11 @@ module e203_exu_alu(
   wire o_ready;
 
   wire o_sel_ifu_excp = ifu_excp_op;
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+  wire o_sel_ttio = ttio_op;
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
   wire o_sel_alu = alu_op;
   wire o_sel_bjp = bjp_op;
   wire o_sel_csr = csr_op;
@@ -706,6 +958,11 @@ module e203_exu_alu(
   assign o_valid =     (o_sel_alu      & alu_o_valid     )
                      | (o_sel_bjp      & bjp_o_valid     )
                      | (o_sel_csr      & csr_o_valid     )
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+                     | (o_sel_ttio      & ttio_o_valid     )
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
                      | (o_sel_agu      & agu_o_valid     )
                      | (o_sel_ifu_excp & ifu_excp_o_valid)
                       `ifdef E203_SUPPORT_SHARE_MULDIV //{
@@ -715,6 +972,11 @@ module e203_exu_alu(
 
   assign ifu_excp_o_ready = o_sel_ifu_excp & o_ready;
   assign alu_o_ready      = o_sel_alu & o_ready;
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+  assign ttio_o_ready      = o_sel_ttio & o_ready;
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
   assign agu_o_ready      = o_sel_agu & o_ready;
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
   assign mdv_o_ready      = o_sel_mdv & o_ready;
@@ -726,6 +988,11 @@ module e203_exu_alu(
                     ({`E203_XLEN{o_sel_alu}} & alu_o_wbck_wdat)
                   | ({`E203_XLEN{o_sel_bjp}} & bjp_o_wbck_wdat)
                   | ({`E203_XLEN{o_sel_csr}} & csr_o_wbck_wdat)
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+                  | ({`E203_XLEN{o_sel_ttio}} & ttio_o_wbck_wdat)
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
                   | ({`E203_XLEN{o_sel_agu}} & agu_o_wbck_wdat)
                       `ifdef E203_SUPPORT_SHARE_MULDIV //{
                   | ({`E203_XLEN{o_sel_mdv}} & mdv_o_wbck_wdat)
@@ -741,6 +1008,11 @@ module e203_exu_alu(
                     ({1{o_sel_alu}} & alu_o_wbck_err)
                   | ({1{o_sel_bjp}} & bjp_o_wbck_err)
                   | ({1{o_sel_csr}} & csr_o_wbck_err)
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+                  | ({1{o_sel_ttio}} & ttio_o_wbck_err)
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
                   | ({1{o_sel_agu}} & agu_o_wbck_err)
                       `ifdef E203_SUPPORT_SHARE_MULDIV //{
                   | ({1{o_sel_mdv}} & mdv_o_wbck_err)
@@ -779,13 +1051,40 @@ module e203_exu_alu(
                               i_pc_vld;
 
   assign cmt_o_misalgn     = (o_sel_agu & agu_o_cmt_misalgn) 
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+                           | (o_sel_ttio & ttio_o_cmt_misalgn) 
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
                            ;
-  assign cmt_o_ld          = (o_sel_agu & agu_o_cmt_ld)      
+  assign cmt_o_ld          = (o_sel_agu & agu_o_cmt_ld)    
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+                           | (o_sel_ttio & ttio_o_cmt_ld)    
+`endif
+////////////////////////////////////////////////////////////////////////////////////////  
                            ;
   assign cmt_o_badaddr     = ({`E203_ADDR_SIZE{o_sel_agu}} & agu_o_cmt_badaddr)  
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+                           | ({`E203_ADDR_SIZE{o_sel_ttio}} & ttio_o_cmt_badaddr)  
+`endif
+//////////////////////////////////////////////////////////////////////////////////////// 
                            ;
-  assign cmt_o_buserr      = o_sel_agu & agu_o_cmt_buserr;
-  assign cmt_o_stamo       = o_sel_agu & agu_o_cmt_stamo ;
+  assign cmt_o_buserr      = (o_sel_agu & agu_o_cmt_buserr)
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+                           | (o_sel_ttio & ttio_o_cmt_buserr)    
+`endif
+//////////////////////////////////////////////////////////////////////////////////////// 
+                           ;
+  assign cmt_o_stamo       = (o_sel_agu & agu_o_cmt_stamo)
+////////////////////////////////////////////////////////////////////////////////////////
+`ifdef TTIO
+                           | (o_sel_ttio & ttio_o_cmt_stamo)   
+`endif
+//////////////////////////////////////////////////////////////////////////////////////// 
+                           ;
 
   assign cmt_o_bjp         = o_sel_bjp & bjp_o_cmt_bjp;
   assign cmt_o_mret        = o_sel_bjp & bjp_o_cmt_mret;
