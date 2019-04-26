@@ -1,0 +1,31 @@
+digraph cluster_irq_sync {
+label = "irq_sync";
+
+subgraph cluster_irq_sync_interface {
+label = "irq_sync_interface";
+
+subgraph cluster_irq_sync_input {
+    label = "irq_sync_input";
+    irq_sync_input_clk  [ shape=box, label="irq_sync_input_clk", color="black", fontcolor="black" ];
+    irq_sync_input_rst_n  [ shape=box, label="irq_sync_input_rst_n", color="black", fontcolor="black" ];
+    irq_sync_input_ext_irq_a  [ shape=box, label="irq_sync_input_ext_irq_a", color="black", fontcolor="black" ];
+    irq_sync_input_sft_irq_a  [ shape=box, label="irq_sync_input_sft_irq_a", color="black", fontcolor="black" ];
+    irq_sync_input_tmr_irq_a  [ shape=box, label="irq_sync_input_tmr_irq_a", color="black", fontcolor="black" ];
+    irq_sync_input_dbg_irq_a  [ shape=box, label="irq_sync_input_dbg_irq_a", color="black", fontcolor="black" ];
+}
+
+subgraph cluster_irq_sync_output {
+    label = "irq_sync_output";
+    irq_sync_output_ext_irq_r  [ shape=box, label="irq_sync_output_ext_irq_r", color="black", fontcolor="black" ];
+    irq_sync_output_sft_irq_r  [ shape=box, label="irq_sync_output_sft_irq_r", color="black", fontcolor="black" ];
+    irq_sync_output_tmr_irq_r  [ shape=box, label="irq_sync_output_tmr_irq_r", color="black", fontcolor="black" ];
+    irq_sync_output_dbg_irq_r  [ shape=box, label="irq_sync_output_dbg_irq_r", color="black", fontcolor="black" ];
+}
+
+subgraph cluster_irq_sync_inout {
+    label = "irq_sync_inout";
+}
+
+}
+
+}

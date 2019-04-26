@@ -1,0 +1,13 @@
+digraph cluster_cpu_inout {
+    label = "cpu_inout";
+    cpu_inout_debug_interface  [ shape=box, label="cpu_inout_debug_interface", color="black", fontcolor="black" ];
+    cpu_inout_itcm_ext_interface  [ shape=box, label="cpu_inout_itcm_ext_interface", color="black", fontcolor="black" ];
+    cpu_inout_dtcm_ext_interface  [ shape=box, label="cpu_inout_dtcm_ext_interface", color="black", fontcolor="black" ];
+    cpu_inout_ppi_interface  [ shape=box, label="cpu_inout_ppi_interface", color="black", fontcolor="black" ];
+    cpu_inout_clint_interface  [ shape=box, label="cpu_inout_clint_interface", color="black", fontcolor="black" ];
+    cpu_inout_plic_interface  [ shape=box, label="cpu_inout_plic_interface", color="black", fontcolor="black" ];
+    cpu_inout_fio_interface  [ shape=box, label="cpu_inout_fio_interface", color="black", fontcolor="black" ];
+    cpu_inout_mem_interface  [ shape=box, label="cpu_inout_mem_interface", color="black", fontcolor="black" ];
+    cpu_inout_itcm_interface  [ shape=box, label="cpu_inout_itcm_interface", color="black", fontcolor="black" ];
+    cpu_inout_dtcm_interface  [ shape=box, label="cpu_inout_dtcm_interface", color="black", fontcolor="black" ];
+}

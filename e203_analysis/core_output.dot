@@ -1,0 +1,12 @@
+digraph cluster_core_output {
+    label = "core_output";
+    core_output_inspect_pc  [ shape=box, label="core_output_inspect_pc", color="black", fontcolor="black" ];
+    core_output_core_wfi  [ shape=box, label="core_output_core_wfi", color="black", fontcolor="black" ];
+    core_output_tm_stop  [ shape=box, label="core_output_tm_stop", color="black", fontcolor="black" ];
+    core_output_core_cgstop  [ shape=box, label="core_output_core_cgstop", color="black", fontcolor="black" ];
+    core_output_tcm_cgstop  [ shape=box, label="core_output_tcm_cgstop", color="black", fontcolor="black" ];
+    core_output_exu_active  [ shape=box, label="core_output_exu_active", color="black", fontcolor="black" ];
+    core_output_ifu_active  [ shape=box, label="core_output_ifu_active", color="black", fontcolor="black" ];
+    core_output_lsu_active  [ shape=box, label="core_output_lsu_active", color="black", fontcolor="black" ];
+    core_output_biu_active  [ shape=box, label="core_output_biu_active", color="black", fontcolor="black" ];
+}

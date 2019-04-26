@@ -1,0 +1,19 @@
+digraph cluster_srams_interface {
+label = "srams_interface";
+
+subgraph cluster_srams_input {
+    label = "srams_input";
+    srams_input_test_mode  [ shape=box, label="srams_input_test_mode", color="black", fontcolor="black" ];
+}
+
+subgraph cluster_srams_output {
+    label = "srams_output";
+}
+
+subgraph cluster_srams_inout {
+    label = "srams_inout";
+    srams_inout_itcm_interface  [ shape=box, label="srams_inout_itcm_interface", color="black", fontcolor="black" ];
+    srams_inout_dtcm_interface  [ shape=box, label="srams_inout_dtcm_interface", color="black", fontcolor="black" ];
+}
+
+}

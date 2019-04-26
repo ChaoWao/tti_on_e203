@@ -1,0 +1,4 @@
+digraph cluster_srams_input {
+    label = "srams_input";
+    srams_input_test_mode  [ shape=box, label="srams_input_test_mode", color="black", fontcolor="black" ];
+}

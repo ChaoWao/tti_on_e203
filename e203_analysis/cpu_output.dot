@@ -1,0 +1,15 @@
+digraph cluster_cpu_output {
+    label = "cpu_output";
+    cpu_output_inspect_pc  [ shape=box, label="cpu_output_inspect_pc", color="black", fontcolor="black" ];
+    cpu_output_inspect_dbg_irq  [ shape=box, label="cpu_output_inspect_dbg_irq", color="black", fontcolor="black" ];
+    cpu_output_inspect_mem_cmd_valid  [ shape=box, label="cpu_output_inspect_mem_cmd_valid", color="black", fontcolor="black" ];
+    cpu_output_inspect_mem_cmd_ready  [ shape=box, label="cpu_output_inspect_mem_cmd_ready", color="black", fontcolor="black" ];
+    cpu_output_inspect_mem_rsp_valid  [ shape=box, label="cpu_output_inspect_mem_rsp_valid", color="black", fontcolor="black" ];
+    cpu_output_inspect_mem_rsp_ready  [ shape=box, label="cpu_output_inspect_mem_rsp_ready", color="black", fontcolor="black" ];
+    cpu_output_inspect_core_clk  [ shape=box, label="cpu_output_inspect_core_clk", color="black", fontcolor="black" ];
+    cpu_output_core_csr_clk  [ shape=box, label="cpu_output_core_csr_clk", color="black", fontcolor="black" ];
+    cpu_output_rst_itcm  [ shape=box, label="cpu_output_rst_itcm", color="black", fontcolor="black" ];
+    cpu_output_rst_dtcm  [ shape=box, label="cpu_output_rst_dtcm", color="black", fontcolor="black" ];
+    cpu_output_core_wfi  [ shape=box, label="cpu_output_core_wfi", color="black", fontcolor="black" ];
+    cpu_output_tm_stop  [ shape=box, label="cpu_output_tm_stop", color="black", fontcolor="black" ];
+}

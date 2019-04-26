@@ -1,0 +1,41 @@
+digraph cluster_clk_ctrl {
+label = "clk_ctrl";
+
+subgraph cluster_clk_ctrl_interface {
+label = "clk_ctrl_interface";
+
+subgraph cluster_clk_ctrl_input {
+    label = "clk_ctrl_input";
+    clk_ctrl_input_clk  [ shape=box, label="clk_ctrl_input_clk", color="black", fontcolor="black" ];
+    clk_ctrl_input_rst_n  [ shape=box, label="clk_ctrl_input_rst_n", color="black", fontcolor="black" ];
+    clk_ctrl_input_test_mode  [ shape=box, label="clk_ctrl_input_test_mode", color="black", fontcolor="black" ];
+    clk_ctrl_input_core_cgstop  [ shape=box, label="clk_ctrl_input_core_cgstop", color="black", fontcolor="black" ];
+    clk_ctrl_input_core_ifu_active  [ shape=box, label="clk_ctrl_input_core_ifu_active", color="black", fontcolor="black" ];
+    clk_ctrl_input_core_exu_active  [ shape=box, label="clk_ctrl_input_core_exu_active", color="black", fontcolor="black" ];
+    clk_ctrl_input_core_lsu_active  [ shape=box, label="clk_ctrl_input_core_lsu_active", color="black", fontcolor="black" ];
+    clk_ctrl_input_core_biu_active  [ shape=box, label="clk_ctrl_input_core_biu_active", color="black", fontcolor="black" ];
+    clk_ctrl_input_itcm_active  [ shape=box, label="clk_ctrl_input_itcm_active", color="black", fontcolor="black" ];
+    clk_ctrl_input_dtcm_active  [ shape=box, label="clk_ctrl_input_dtcm_active", color="black", fontcolor="black" ];
+    clk_ctrl_input_core_wfi  [ shape=box, label="clk_ctrl_input_core_wfi", color="black", fontcolor="black" ];
+}
+
+subgraph cluster_clk_ctrl_output {
+    label = "clk_ctrl_output";
+    clk_ctrl_output_clk_aon  [ shape=box, label="clk_ctrl_output_clk_aon", color="black", fontcolor="black" ];
+    clk_ctrl_output_itcm_ls  [ shape=box, label="clk_ctrl_output_itcm_ls", color="black", fontcolor="black" ];
+    clk_ctrl_output_dtcm_ls  [ shape=box, label="clk_ctrl_output_dtcm_ls", color="black", fontcolor="black" ];
+    clk_ctrl_output_clk_core_ifu  [ shape=box, label="clk_ctrl_output_clk_core_ifu", color="black", fontcolor="black" ];
+    clk_ctrl_output_clk_core_exu  [ shape=box, label="clk_ctrl_output_clk_core_exu", color="black", fontcolor="black" ];
+    clk_ctrl_output_clk_core_lsu  [ shape=box, label="clk_ctrl_output_clk_core_lsu", color="black", fontcolor="black" ];
+    clk_ctrl_output_clk_core_biu  [ shape=box, label="clk_ctrl_output_clk_core_biu", color="black", fontcolor="black" ];
+    clk_ctrl_output_clk_itcm  [ shape=box, label="clk_ctrl_output_clk_itcm", color="black", fontcolor="black" ];
+    clk_ctrl_output_clk_dtcm  [ shape=box, label="clk_ctrl_output_clk_dtcm", color="black", fontcolor="black" ];
+}
+
+subgraph cluster_clk_ctrl_inout {
+    label = "clk_ctrl_inout";
+}
+
+}
+
+}

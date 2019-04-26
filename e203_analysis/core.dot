@@ -1,0 +1,59 @@
+digraph cluster_core {
+label="core";
+
+subgraph cluster_core_interface {
+label = "core_interface";
+
+subgraph cluster_core_input {
+    label = "core_input";
+    core_input_pc_rtvec  [ shape=box, label="core_input_pc_rtvec", color="black", fontcolor="black" ];
+    core_input_core_mhartid  [ shape=box, label="core_input_core_mhartid", color="black", fontcolor="black" ];
+    core_input_dbg_irq_r  [ shape=box, label="core_input_dbg_irq_r", color="black", fontcolor="black" ];
+    core_input_lcl_irq_r  [ shape=box, label="core_input_lcl_irq_r(Always 0)", color="black", fontcolor="black" ];
+    core_input_evt_r  [ shape=box, label="core_input_evt_r(Always 0)", color="black", fontcolor="black" ];
+    core_input_ext_irq_r  [ shape=box, label="core_input_ext_irq_r", color="black", fontcolor="black" ];
+    core_input_sft_irq_r  [ shape=box, label="core_input_sft_irq_r", color="black", fontcolor="black" ];
+    core_input_tmr_irq_r  [ shape=box, label="core_input_tmr_irq_r", color="black", fontcolor="black" ];
+    core_input_clk_core_ifu  [ shape=box, label="core_input_clk_core_ifu", color="black", fontcolor="black" ];
+    core_input_clk_core_exu  [ shape=box, label="core_input_clk_core_exu", color="black", fontcolor="black" ];
+    core_input_clk_core_lsu  [ shape=box, label="core_input_clk_core_lsu", color="black", fontcolor="black" ];
+    core_input_clk_core_biu  [ shape=box, label="core_input_clk_core_biu", color="black", fontcolor="black" ];
+    core_input_clk_aon  [ shape=box, label="core_input_clk_aon", color="black", fontcolor="black" ];
+    core_input_test_mode  [ shape=box, label="core_input_test_mode", color="black", fontcolor="black" ];
+    core_input_rst_n  [ shape=box, label="core_input_rst_n", color="black", fontcolor="black" ];
+}
+
+subgraph cluster_core_output {
+    label = "core_output";
+    core_output_inspect_pc  [ shape=box, label="core_output_inspect_pc", color="black", fontcolor="black" ];
+    core_output_core_wfi  [ shape=box, label="core_output_core_wfi", color="black", fontcolor="black" ];
+    core_output_tm_stop  [ shape=box, label="core_output_tm_stop", color="black", fontcolor="black" ];
+    core_output_core_cgstop  [ shape=box, label="core_output_core_cgstop", color="black", fontcolor="black" ];
+    core_output_tcm_cgstop  [ shape=box, label="core_output_tcm_cgstop", color="black", fontcolor="black" ];
+    core_output_exu_active  [ shape=box, label="core_output_exu_active", color="black", fontcolor="black" ];
+    core_output_ifu_active  [ shape=box, label="core_output_ifu_active", color="black", fontcolor="black" ];
+    core_output_lsu_active  [ shape=box, label="core_output_lsu_active", color="black", fontcolor="black" ];
+    core_output_biu_active  [ shape=box, label="core_output_biu_active", color="black", fontcolor="black" ];
+}
+
+subgraph cluster_core_inout {
+    label = "core_inout";
+    core_inout_eai_csr_interface  [ shape=box, label="core_inout_eai_csr_interface", color="black", fontcolor="black" ];
+    core_inout_debug_interface  [ shape=box, label="core_inout_debug_interface", color="black", fontcolor="black" ];
+    core_inout_ifu2itcm_interface  [ shape=box, label="core_inout_ifu2itcm_interface", color="black", fontcolor="black" ];
+    core_inout_ppi_interface  [ shape=box, label="core_inout_ppi_interface", color="black", fontcolor="black" ];
+    core_inout_clint_interface  [ shape=box, label="core_inout_clint_interface", color="black", fontcolor="black" ];
+    core_inout_plic_interface  [ shape=box, label="core_inout_plic_interface", color="black", fontcolor="black" ];
+    core_inout_fio_interface  [ shape=box, label="core_inout_fio_interface", color="black", fontcolor="black" ];
+    core_inout_mem_interface  [ shape=box, label="core_inout_mem_interface", color="black", fontcolor="black" ];
+    core_inout_lsu2itcm_interface  [ shape=box, label="core_inout_lsu2itcm_interface", color="black", fontcolor="black" ];
+    core_inout_isu2dtcm_interface  [ shape=box, label="core_inout_lsu2dtcm_interface", color="black", fontcolor="black" ];
+}
+
+}
+
+// core_input
+// core_output
+// core_inout
+// wire
+}
