@@ -568,6 +568,27 @@ module e203_exu(
     .read_csr_dat        (read_csr_dat),
     .wbck_csr_dat        (wbck_csr_dat),
 
+`ifdef E203_SUPPORT_TTIO
+    .icb_cmd_valid   (agu_icb_cmd_valid ),
+    .icb_cmd_ready   (agu_icb_cmd_ready ),
+    .icb_cmd_addr    (agu_icb_cmd_addr ),
+    .icb_cmd_read    (agu_icb_cmd_read   ),
+    .icb_cmd_wdata   (agu_icb_cmd_wdata ),
+    .icb_cmd_wmask   (agu_icb_cmd_wmask ),
+    .icb_cmd_lock    (agu_icb_cmd_lock),
+    .icb_cmd_excl    (agu_icb_cmd_excl),
+    .icb_cmd_size    (agu_icb_cmd_size),
+   
+    .icb_cmd_back2agu(agu_icb_cmd_back2agu ),
+    .icb_cmd_usign   (agu_icb_cmd_usign),
+    .icb_cmd_itag    (agu_icb_cmd_itag),
+  
+    .icb_rsp_valid   (agu_icb_rsp_valid ),
+    .icb_rsp_ready   (agu_icb_rsp_ready ),
+    .icb_rsp_err     (agu_icb_rsp_err   ),
+    .icb_rsp_excl_ok (agu_icb_rsp_excl_ok),
+    .icb_rsp_rdata   (agu_icb_rsp_rdata),
+`else
     .agu_icb_cmd_valid   (agu_icb_cmd_valid ),
     .agu_icb_cmd_ready   (agu_icb_cmd_ready ),
     .agu_icb_cmd_addr    (agu_icb_cmd_addr ),
@@ -587,6 +608,7 @@ module e203_exu(
     .agu_icb_rsp_err     (agu_icb_rsp_err   ),
     .agu_icb_rsp_excl_ok (agu_icb_rsp_excl_ok),
     .agu_icb_rsp_rdata   (agu_icb_rsp_rdata),
+`endif
 
     
 

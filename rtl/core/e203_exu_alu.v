@@ -87,7 +87,7 @@ module e203_exu_alu(
   output [`E203_XLEN-1:0] wbck_csr_dat,
 
 
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
   output                         icb_cmd_valid,
   input                          icb_cmd_ready,
   output [`E203_ADDR_SIZE-1:0]   icb_cmd_addr,
@@ -137,7 +137,7 @@ module e203_exu_alu(
 
   wire ifu_excp_op = i_ilegl | i_buserr | i_misalgn;
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
   wire ttio_op = (~ifu_excp_op) & (i_info[`E203_DECINFO_GRP]) == `E203_DECINFO_GRP_TTIO);
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -159,7 +159,7 @@ module e203_exu_alu(
   wire mdv_i_valid = i_valid & mdv_op;
 `endif//E203_SUPPORT_SHARE_MULDIV}
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
   wire ttio_i_valid = i_valid & ttio_op;
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -173,7 +173,7 @@ module e203_exu_alu(
   wire mdv_i_ready;
 `endif//E203_SUPPORT_SHARE_MULDIV}
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
   wire ttio_i_ready;
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -188,7 +188,7 @@ module e203_exu_alu(
                    | (mdv_i_ready & mdv_op)
                    `endif//E203_SUPPORT_SHARE_MULDIV}
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
                    | (ttio_i_ready & ttio_op)
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -199,7 +199,7 @@ module e203_exu_alu(
                      ;
 
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
   wire ttio_i_longpipe;
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -213,14 +213,14 @@ module e203_exu_alu(
                     | (mdv_i_longpipe & mdv_op) 
                    `endif//E203_SUPPORT_SHARE_MULDIV}
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
                     | (ttio_i_longpipe & ttio_op) 
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
                    ;
 
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
   wire ttio_o_amo_wait;
   wire agu_o_amo_wait;
   assign amo_wait =    (agu_op & agu_o_amo_wait) | (ttio_op & ttio_o_amo_wait);
@@ -400,7 +400,7 @@ module e203_exu_alu(
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
   //////////////////////////////////////////////////////////////
   // Instantiate the TTIO module
   //
@@ -577,7 +577,7 @@ module e203_exu_alu(
   wire  [`E203_ITAG_WIDTH-1:0]     agu_i_itag = {`E203_ITAG_WIDTH   {agu_op}} & i_itag;  
 
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
   wire                         agu_icb_cmd_valid, // Handshake valid
   wire                          agu_icb_cmd_ready, // Handshake ready
   wire [`E203_ADDR_SIZE-1:0]   agu_icb_cmd_addr, // Bus transaction start addr 
@@ -613,7 +613,7 @@ module e203_exu_alu(
       .flush_pulse         (flush_pulse    ),
       .flush_req           (flush_req      ),
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
       .amo_wait            (agu_o_amo_wait),
 `else
       .amo_wait            (amo_wait),
@@ -856,7 +856,7 @@ module e203_exu_alu(
       .bjp_req_alu_add_res (bjp_req_alu_add_res   ),
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO             
+`ifdef E203_SUPPORT_TTIO             
       .ttio_req_alu         (ttio_req_alu           ),
       .ttio_req_alu_op1     (ttio_req_alu_op1       ),
       .ttio_req_alu_op2     (ttio_req_alu_op2       ),
@@ -943,7 +943,7 @@ module e203_exu_alu(
 
   wire o_sel_ifu_excp = ifu_excp_op;
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
   wire o_sel_ttio = ttio_op;
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -959,7 +959,7 @@ module e203_exu_alu(
                      | (o_sel_bjp      & bjp_o_valid     )
                      | (o_sel_csr      & csr_o_valid     )
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
                      | (o_sel_ttio      & ttio_o_valid     )
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -973,7 +973,7 @@ module e203_exu_alu(
   assign ifu_excp_o_ready = o_sel_ifu_excp & o_ready;
   assign alu_o_ready      = o_sel_alu & o_ready;
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
   assign ttio_o_ready      = o_sel_ttio & o_ready;
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -989,7 +989,7 @@ module e203_exu_alu(
                   | ({`E203_XLEN{o_sel_bjp}} & bjp_o_wbck_wdat)
                   | ({`E203_XLEN{o_sel_csr}} & csr_o_wbck_wdat)
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
                   | ({`E203_XLEN{o_sel_ttio}} & ttio_o_wbck_wdat)
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -1009,7 +1009,7 @@ module e203_exu_alu(
                   | ({1{o_sel_bjp}} & bjp_o_wbck_err)
                   | ({1{o_sel_csr}} & csr_o_wbck_err)
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
                   | ({1{o_sel_ttio}} & ttio_o_wbck_err)
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -1052,35 +1052,35 @@ module e203_exu_alu(
 
   assign cmt_o_misalgn     = (o_sel_agu & agu_o_cmt_misalgn) 
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
                            | (o_sel_ttio & ttio_o_cmt_misalgn) 
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
                            ;
   assign cmt_o_ld          = (o_sel_agu & agu_o_cmt_ld)    
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
                            | (o_sel_ttio & ttio_o_cmt_ld)    
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////  
                            ;
   assign cmt_o_badaddr     = ({`E203_ADDR_SIZE{o_sel_agu}} & agu_o_cmt_badaddr)  
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
                            | ({`E203_ADDR_SIZE{o_sel_ttio}} & ttio_o_cmt_badaddr)  
 `endif
 //////////////////////////////////////////////////////////////////////////////////////// 
                            ;
   assign cmt_o_buserr      = (o_sel_agu & agu_o_cmt_buserr)
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
                            | (o_sel_ttio & ttio_o_cmt_buserr)    
 `endif
 //////////////////////////////////////////////////////////////////////////////////////// 
                            ;
   assign cmt_o_stamo       = (o_sel_agu & agu_o_cmt_stamo)
 ////////////////////////////////////////////////////////////////////////////////////////
-`ifdef TTIO
+`ifdef E203_SUPPORT_TTIO
                            | (o_sel_ttio & ttio_o_cmt_stamo)   
 `endif
 //////////////////////////////////////////////////////////////////////////////////////// 
