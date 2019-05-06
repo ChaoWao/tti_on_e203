@@ -91,35 +91,16 @@ module e203_exu_alu_dpath(
   input  [`E203_XLEN-1:0] agu_sbf_1_nxt,
   output [`E203_XLEN-1:0] agu_sbf_1_r,
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
 `ifdef E203_SUPPORT_TTIO
-  //////////////////////////////////////////////////////
   // TTIO request the datapath
   input  ttio_req_alu,
 
   input  [`E203_XLEN-1:0] ttio_req_alu_op1,
   input  [`E203_XLEN-1:0] ttio_req_alu_op2,
-  input  ttio_req_alu_swap,
-  input  ttio_req_alu_add ,
-  input  ttio_req_alu_and ,
-  input  ttio_req_alu_or  ,
-  input  ttio_req_alu_xor ,
-  input  ttio_req_alu_max ,
-  input  ttio_req_alu_min ,
-  input  ttio_req_alu_maxu,
-  input  ttio_req_alu_minu,
+  input  ttio_req_alu_add,
 
   output [`E203_XLEN-1:0] ttio_req_alu_res,
-
-  input  ttio_sbf_0_ena,
-  input  [`E203_XLEN-1:0] ttio_sbf_0_nxt,
-  output [`E203_XLEN-1:0] ttio_sbf_0_r,
-
-  input  ttio_sbf_1_ena,
-  input  [`E203_XLEN-1:0] ttio_sbf_1_nxt,
-  output [`E203_XLEN-1:0] ttio_sbf_1_r,
 `endif
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
   //////////////////////////////////////////////////////
@@ -521,21 +502,21 @@ module e203_exu_alu_dpath(
       | ({DPATH_MUX_WIDTH{ttio_req_alu}} & {
              ttio_req_alu_op1
             ,ttio_req_alu_op2
-            ,ttio_req_alu_max  
-            ,ttio_req_alu_min  
-            ,ttio_req_alu_maxu 
-            ,ttio_req_alu_minu 
+            ,1'b0
+            ,1'b0
+            ,1'b0
+            ,1'b0
             ,ttio_req_alu_add
             ,1'b0
-            ,ttio_req_alu_or
-            ,ttio_req_alu_xor
-            ,ttio_req_alu_and
             ,1'b0
             ,1'b0
             ,1'b0
             ,1'b0
             ,1'b0
-            ,ttio_req_alu_swap// SWAP just move-Op2 operation
+            ,1'b0
+            ,1'b0
+            ,1'b0
+            ,1'b0// SWAP just move-Op2 operation
             ,1'b0
             ,1'b0
             ,1'b0
@@ -564,52 +545,25 @@ module e203_exu_alu_dpath(
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
       muldiv_req_alu ? muldiv_sbf_0_ena : 
 `endif//E203_SUPPORT_SHARE_MULDIV}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-`ifdef E203_SUPPORT_TTIO
-      ttio_req_alu ? ttio_sbf_0_ena :
-`endif
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
                  agu_sbf_0_ena;
   assign sbf_1_ena = 
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
       muldiv_req_alu ? muldiv_sbf_1_ena : 
 `endif//E203_SUPPORT_SHARE_MULDIV}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-`ifdef E203_SUPPORT_TTIO
-      ttio_req_alu ? ttio_sbf_1_ena :
-`endif
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
                  agu_sbf_1_ena;
 
   assign sbf_0_nxt = 
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
       muldiv_req_alu ? muldiv_sbf_0_nxt : 
 `endif//E203_SUPPORT_SHARE_MULDIV}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-`ifdef E203_SUPPORT_TTIO
-      ttio_req_alu ? {1'b0,ttio_sbf_0_nxt} :
-`endif
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                 {1'b0,agu_sbf_0_nxt};
   assign sbf_1_nxt = 
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
       muldiv_req_alu ? muldiv_sbf_1_nxt : 
 `endif//E203_SUPPORT_SHARE_MULDIV}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-`ifdef E203_SUPPORT_TTIO
-      ttio_req_alu ? {1'b0,ttio_sbf_1_nxt} :
-`endif
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
                  {1'b0,agu_sbf_1_nxt};
 
   assign agu_sbf_0_r = sbf_0_r[`E203_XLEN-1:0];
   assign agu_sbf_1_r = sbf_1_r[`E203_XLEN-1:0];
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-`ifdef E203_SUPPORT_TTIO
-  assign ttio_sbf_0_r = sbf_0_r[`E203_XLEN-1:0];
-  assign ttio_sbf_1_r = sbf_1_r[`E203_XLEN-1:0];
-`endif
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
   assign muldiv_sbf_0_r = sbf_0_r;

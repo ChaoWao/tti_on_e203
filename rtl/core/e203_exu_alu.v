@@ -412,29 +412,14 @@ module e203_exu_alu(
   
   wire ttio_o_cmt_misalgn; 
   wire ttio_o_cmt_ld; 
-  wire ttio_o_cmt_stamo; 
+  wire ttio_o_cmt_st; 
   wire ttio_o_cmt_buserr ; 
   wire [`E203_ADDR_SIZE-1:0] ttio_o_cmt_badaddr ; 
   
   wire [`E203_XLEN-1:0] ttio_req_alu_op1;
   wire [`E203_XLEN-1:0] ttio_req_alu_op2;
-  wire ttio_req_alu_swap;
   wire ttio_req_alu_add ;
-  wire ttio_req_alu_and ;
-  wire ttio_req_alu_or  ;
-  wire ttio_req_alu_xor ;
-  wire ttio_req_alu_max ;
-  wire ttio_req_alu_min ;
-  wire ttio_req_alu_maxu;
-  wire ttio_req_alu_minu;
   wire [`E203_XLEN-1:0] ttio_req_alu_res;
-     
-  wire ttio_sbf_0_ena;
-  wire [`E203_XLEN-1:0] ttio_sbf_0_nxt;
-  wire [`E203_XLEN-1:0] ttio_sbf_0_r;
-  wire ttio_sbf_1_ena;
-  wire [`E203_XLEN-1:0] ttio_sbf_1_nxt;
-  wire [`E203_XLEN-1:0] ttio_sbf_1_r;
 
   wire  [`E203_XLEN-1:0]           ttio_i_rs1  = {`E203_XLEN         {ttio_op}} & i_rs1;
   wire  [`E203_XLEN-1:0]           ttio_i_rs2  = {`E203_XLEN         {ttio_op}} & i_rs2;
@@ -483,7 +468,7 @@ module e203_exu_alu(
       .ttio_o_wbck_err      (ttio_o_wbck_err      ),
       .ttio_o_cmt_misalgn   (ttio_o_cmt_misalgn   ),
       .ttio_o_cmt_ld        (ttio_o_cmt_ld        ),
-      .ttio_o_cmt_stamo     (ttio_o_cmt_stamo     ),
+      .ttio_o_cmt_st     (ttio_o_cmt_st     ),
       .ttio_o_cmt_buserr    (ttio_o_cmt_buserr    ),
       .ttio_o_cmt_badaddr   (ttio_o_cmt_badaddr   ),
                                                 
@@ -507,24 +492,8 @@ module e203_exu_alu(
                                                 
       .ttio_req_alu_op1     (ttio_req_alu_op1     ),
       .ttio_req_alu_op2     (ttio_req_alu_op2     ),
-      .ttio_req_alu_swap    (ttio_req_alu_swap    ),
       .ttio_req_alu_add     (ttio_req_alu_add     ),
-      .ttio_req_alu_and     (ttio_req_alu_and     ),
-      .ttio_req_alu_or      (ttio_req_alu_or      ),
-      .ttio_req_alu_xor     (ttio_req_alu_xor     ),
-      .ttio_req_alu_max     (ttio_req_alu_max     ),
-      .ttio_req_alu_min     (ttio_req_alu_min     ),
-      .ttio_req_alu_maxu    (ttio_req_alu_maxu    ),
-      .ttio_req_alu_minu    (ttio_req_alu_minu    ),
       .ttio_req_alu_res     (ttio_req_alu_res     ),
-                                                
-      .ttio_sbf_0_ena       (ttio_sbf_0_ena       ),
-      .ttio_sbf_0_nxt       (ttio_sbf_0_nxt       ),
-      .ttio_sbf_0_r         (ttio_sbf_0_r         ),
-                                                
-      .ttio_sbf_1_ena       (ttio_sbf_1_ena       ),
-      .ttio_sbf_1_nxt       (ttio_sbf_1_nxt       ),
-      .ttio_sbf_1_r         (ttio_sbf_1_r         ),
      
       .clk                 (clk),
       .rst_n               (rst_n)
@@ -824,6 +793,9 @@ module e203_exu_alu(
 `endif//E203_SUPPORT_SHARE_MULDIV}
   wire bjp_req_alu = bjp_op;// Since BJP may not write-back, but still need ALU datapath
   wire agu_req_alu = agu_op;// Since AGU may have some other features, so always need ALU datapath
+`ifdef E203_SUPPORT_TTIO
+  wire ttio_req_alu = ttio_op;
+`endif
 
   e203_exu_alu_dpath u_e203_exu_alu_dpath(
       .alu_req_alu         (alu_req_alu           ),    
@@ -860,24 +832,8 @@ module e203_exu_alu(
       .ttio_req_alu         (ttio_req_alu           ),
       .ttio_req_alu_op1     (ttio_req_alu_op1       ),
       .ttio_req_alu_op2     (ttio_req_alu_op2       ),
-      .ttio_req_alu_swap    (ttio_req_alu_swap      ),
       .ttio_req_alu_add     (ttio_req_alu_add       ),
-      .ttio_req_alu_and     (ttio_req_alu_and       ),
-      .ttio_req_alu_or      (ttio_req_alu_or        ),
-      .ttio_req_alu_xor     (ttio_req_alu_xor       ),
-      .ttio_req_alu_max     (ttio_req_alu_max       ),
-      .ttio_req_alu_min     (ttio_req_alu_min       ),
-      .ttio_req_alu_maxu    (ttio_req_alu_maxu      ),
-      .ttio_req_alu_minu    (ttio_req_alu_minu      ),
       .ttio_req_alu_res     (ttio_req_alu_res       ),
-
-      .ttio_sbf_0_ena       (ttio_sbf_0_ena         ),
-      .ttio_sbf_0_nxt       (ttio_sbf_0_nxt         ),
-      .ttio_sbf_0_r         (ttio_sbf_0_r           ),
-            
-      .ttio_sbf_1_ena       (ttio_sbf_1_ena         ),
-      .ttio_sbf_1_nxt       (ttio_sbf_1_nxt         ),
-      .ttio_sbf_1_r         (ttio_sbf_1_r           ),      
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1081,7 +1037,7 @@ module e203_exu_alu(
   assign cmt_o_stamo       = (o_sel_agu & agu_o_cmt_stamo)
 ////////////////////////////////////////////////////////////////////////////////////////
 `ifdef E203_SUPPORT_TTIO
-                           | (o_sel_ttio & ttio_o_cmt_stamo)   
+                           | (o_sel_ttio & ttio_o_cmt_st)   
 `endif
 //////////////////////////////////////////////////////////////////////////////////////// 
                            ;
