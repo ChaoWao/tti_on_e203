@@ -547,11 +547,7 @@ module e203_exu_alu_muldiv(
   wire [63:0] golden0_mul_res = (mul_op1[32]^mul_op2[32]) ? (~golden0_mul_res_pre + 1) : golden0_mul_res_pre;
   wire [63:0] golden1_mul_res = $signed(mul_op1) * $signed(mul_op2); 
   
-  // To check the signed * operation is really get what we wanted
-    CHECK_SIGNED_OP_CORRECT:
-      assert property (@(posedge clk) disable iff ((~rst_n) | (~muldiv_o_valid))  ((golden0_mul_res == golden1_mul_res)))
-      else $fatal ("\n Error: Oops, This should never happen. \n");
-
+  
   wire [31:0] golden1_res_mul    = golden1_mul_res[31:0];
   wire [31:0] golden1_res_mulh   = golden1_mul_res[63:32];                       
   wire [31:0] golden1_res_mulhsu = golden1_mul_res[63:32];                                              
@@ -567,15 +563,7 @@ module e203_exu_alu_muldiv(
   wire [31:0] golden2_res_mulhsu = golden2_res_mul_SxU[63:32];                                              
   wire [31:0] golden2_res_mulhu  = golden2_res_mul_UxU[63:32];                                                
 
-  // To check four different combination will all generate same lower 32bits result
-    CHECK_FOUR_COMB_SAME_RES:
-      assert property (@(posedge clk) disable iff ((~rst_n) | (~muldiv_o_valid))
-          (golden2_res_mul_SxS[31:0] == golden2_res_mul_SxU[31:0])
-        & (golden2_res_mul_UxS[31:0] == golden2_res_mul_UxU[31:0])
-        & (golden2_res_mul_SxU[31:0] == golden2_res_mul_UxS[31:0])
-       )
-      else $fatal ("\n Error: Oops, This should never happen. \n");
-
+  
       // Seems the golden2 result is not correct in case of mulhsu, so have to comment it out
  // // To check golden1 and golden2 result are same
  //   CHECK_GOLD1_AND_GOLD2_SAME:
@@ -609,21 +597,7 @@ module e203_exu_alu_muldiv(
          i_remu   ? golden_res_remu[31:0]    :
                     `E203_XLEN'b0;
 
-  CHECK_GOLD_AND_ACTUAL_SAME:
-        // Since the printed value is not aligned with posedge clock, so change it to negetive
-    assert property (@(negedge clk) disable iff ((~rst_n) | flush_pulse)
-        (muldiv_o_valid ? (golden_res == muldiv_o_wbck_wdat   ) : 1'b1)
-     )
-    else begin
-        $display("??????????????????????????????????????????");
-        $display("??????????????????????????????????????????");
-        $display("{i_mul,i_mulh,i_mulhsu,i_mulhu,i_div,i_divu,i_rem,i_remu}=%d%d%d%d%d%d%d%d",i_mul,i_mulh,i_mulhsu,i_mulhu,i_div,i_divu,i_rem,i_remu);
-        $display("muldiv_i_rs1=%h\nmuldiv_i_rs2=%h\n",muldiv_i_rs1,muldiv_i_rs2);     
-        $display("golden_res=%h\nmuldiv_o_wbck_wdat=%h",golden_res,muldiv_o_wbck_wdat);     
-        $display("??????????????????????????????????????????");
-        $fatal ("\n Error: Oops, This should never happen. \n");
-      end
-
+  
 //synopsys translate_on
 `endif//}
 `endif//}

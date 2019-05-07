@@ -67,9 +67,9 @@ wire flush_block = ttio_i_flush_req;
 wire ttio_i_settr = ttio_i_info[`E203_DECINFO_TTIO_SETTR] & (~flush_block);
 wire ttio_i_setti = ttio_i_info[`E203_DECINFO_TTIO_SETTI] & (~flush_block);
 wire ttio_i_getti = ttio_i_info[`E203_DECINFO_TTIO_GETTI] & (~flush_block);
-wire ttio_i_move = ttio_i_info[`E203_DECINFO_TTIO_MOVE] & (~fluch_block);
-wire ttio_i_ttiat = ttio_i_info[`E203_DECINFO_TTIO_TTIAT] & (~fluch_block);
-wire ttio_i_ttoat = ttio_i_info[`E203_DECINFO_TTIO_TTOAT] & (~fluch_block);
+wire ttio_i_move = ttio_i_info[`E203_DECINFO_TTIO_MOVE] & (~flush_block);
+wire ttio_i_ttiat = ttio_i_info[`E203_DECINFO_TTIO_TTIAT] & (~flush_block);
+wire ttio_i_ttoat = ttio_i_info[`E203_DECINFO_TTIO_TTOAT] & (~flush_block);
 
 wire [2:0] ttio_i_rtidx = ttio_i_info[`E203_DECINFO_TTIO_RTIDX];
 wire [1:0] ttio_i_size = 2'b10;
@@ -109,15 +109,15 @@ assign ttio_o_wbck_err = ttio_o_cmt_buserr | ttio_o_cmt_misalgn;
 
 assign ttio_o_cmt_buserr  = 1'b0;
 assign ttio_o_cmt_badaddr = ttio_icb_cmd_addr;
-assign ttio_o_cmt_misalgn = ttio_i_unalgnldst;
+assign ttio_o_cmt_misalgn = ttio_i_unalgnio;
 assign ttio_o_cmt_ld      = ttio_i_ttiat & (~ttio_i_excl); 
 assign ttio_o_cmt_st      = ttio_i_ttoat | ttio_i_excl;
 
 assign ttio_icb_rsp_ready = 1'b1;
 
-assign ttio_icb_cmd_valid = ((ttio_i_algnldst & ttio_i_valid) & (ttio_o_ready));
+assign ttio_icb_cmd_valid = ((ttio_i_algnio & ttio_i_valid) & (ttio_o_ready));
 assign ttio_icb_cmd_addr = ttio_req_alu_res[`E203_ADDR_SIZE-1:0];
-assign ttio_icb_cmd_read = (ttio_i_algnldst & ttio_i_load);
+assign ttio_icb_cmd_read = (ttio_i_algnio & ttio_i_ttiat);
 
 wire [`E203_XLEN-1:0] algnst_wdata = 
         ({`E203_XLEN{ttio_i_size_b }} & {4{ttio_i_rs2[7:0]}})

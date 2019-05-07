@@ -163,6 +163,8 @@ module e203_exu_decode(
   wire rv32_func7_1110001 = (rv32_func7 == 7'b1110001);  
   wire rv32_func7_1100001 = (rv32_func7 == 7'b1100001);  
   wire rv32_func7_1101001 = (rv32_func7 == 7'b1101001);  
+  wire rv32_func7_0000010 = (rv32_func7 == 7'b0000010); 
+  wire rv32_func7_0000011 = (rv32_func7 == 7'b0000011); 
 
   wire rv32_rs1_x0 = (rv32_rs1 == 5'b00000);
   wire rv32_rs2_x0 = (rv32_rs2 == 5'b00000);

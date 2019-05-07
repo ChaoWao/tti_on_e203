@@ -37,12 +37,6 @@ module sirv_gnrl_xchecker # (
 );
 
 
-CHECK_THE_X_VALUE:
-  assert property (@(posedge clk) 
-                     ((^(i_dat)) !== 1'bx)
-                  )
-  else $fatal ("\n Error: Oops, detected a X value!!! This should never happen. \n");
-
 endmodule
 //synopsys translate_on
 `endif//}

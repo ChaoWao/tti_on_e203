@@ -579,7 +579,7 @@ module e203_exu(
     .icb_cmd_excl    (agu_icb_cmd_excl),
     .icb_cmd_size    (agu_icb_cmd_size),
    
-    .icb_cmd_back2agu(agu_icb_cmd_back2agu ),
+    .icb_cmd_back   (agu_icb_cmd_back2agu ),
     .icb_cmd_usign   (agu_icb_cmd_usign),
     .icb_cmd_itag    (agu_icb_cmd_itag),
   

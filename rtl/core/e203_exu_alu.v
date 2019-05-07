@@ -138,7 +138,7 @@ module e203_exu_alu(
   wire ifu_excp_op = i_ilegl | i_buserr | i_misalgn;
 ////////////////////////////////////////////////////////////////////////////////////////
 `ifdef E203_SUPPORT_TTIO
-  wire ttio_op = (~ifu_excp_op) & (i_info[`E203_DECINFO_GRP]) == `E203_DECINFO_GRP_TTIO);
+  wire ttio_op = (~ifu_excp_op) & (i_info[`E203_DECINFO_GRP] == `E203_DECINFO_GRP_TTIO);
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
   wire alu_op = (~ifu_excp_op) & (i_info[`E203_DECINFO_GRP] == `E203_DECINFO_GRP_ALU); 
@@ -223,48 +223,7 @@ module e203_exu_alu(
 `ifdef E203_SUPPORT_TTIO
   wire ttio_o_amo_wait;
   wire agu_o_amo_wait;
-  assign amo_wait =    (agu_op & agu_o_amo_wait) | (ttio_op & ttio_o_amo_wait);
-  
-  assign icb_cmd_valid = (agu_op & agu_icb_cmd_valid) | (ttio_op & ttio_icb_cmd_valid);
-  
-  assign agu_icb_cmd_ready = (icb_cmd_ready & agu_op);
-  assign ttio_icb_cmd_ready = (icb_cmd_ready & ttio_op);
-  
-  assign icb_cmd_valid = (agu_icb_cmd_valid & agu_op) | (ttio_icb_cmd_valid & ttio_op);
-  
-  assign icb_cmd_addr = ({`E203_ADDR_SIZE{agu_op}} & agu_icb_cmd_addr) | ({`E203_ADDR_SIZE{ttio_op}} & ttio_icb_cmd_addr);
-
-  assign icb_cmd_read = (agu_icb_cmd_read & agu_op) | (ttio_icb_cmd_read & ttio_op);
-  
-  assign icb_cmd_wdata = ({`E203_XLEN{agu_op}} & agu_icb_cmd_wdata) | (({`E203_XLEN{ttio_op}} & ttio_icb_cmd_wdata);
-  
-  assign icb_cmd_wmask = ({(`E203_XLEN/8){agu_op}} & agu_icb_cmd_wmask) | (({(`E203_XLEN/8){ttio_op}} & ttio_icb_cmd_wmask);
-  
-  assign icb_cmd_lock = (agu_op & agu_icb_cmd_lock) | (ttio_op & ttio_icb_cmd_lock);
-  
-  assign icb_cmd_excl = (agu_op & agu_icb_cmd_excl) | (ttio_op & ttio_icb_cmd_excl);
-  
-  assign icb_cmd_size = ({2{agu_op}} & agu_icb_cmd_size) | ({2{ttio_op}} & ttio_icb_cmd_size);
-
-  assign icb_cmd_back = (agu_op & agu_icb_cmd_back2agu) | (ttio_op & ttio_icb_cmd_back2ttio);
-
-  assign icb_cmd_usign = (agu_op & agu_icb_cmd_usign) | (ttio_op & ttio_icb_cmd_usign);
-
-  assign icb_cmd_itag = ({`E203_ITAG_WIDTH{agu_op}} & agu_icb_cmd_itag) | (({`E203_ITAG_WIDTH{ttio_op}} & ttio_icb_cmd_itag);
-
-  assign agu_icb_rsp_valid = (icb_rsp_valid & agu_op);
-  assign ttio_icb_rsp_valid = (icb_rsp_valid & ttio_op);
-
-  assign icb_rsp_ready = (agu_op & agu_icb_rsp_ready) | (ttio_op & ttio_icb_rsp_ready);
-
-  assign agu_icb_rsp_err = (icb_rsp_err & agu_op);
-  assign ttio_icb_rsp_err = (icb_rsp_err & ttio_op);
-
-  assign agu_icb_rsp_excl_ok = (icb_rsp_excl_ok & agu_op);
-  assign ttio_icb_rsp_excl_ok = (icb_rsp_excl_ok & ttio_op);
-
-  assign agu_icb_rsp_rdata = (icb_rsp_rdata & {`E203_XLEN{agu_op}});
-  assign ttio_icb_rsp_rdata = (icb_rsp_rdata & {`E203_XLEN{ttio_op}});
+  assign amo_wait = (agu_op & agu_o_amo_wait) | (ttio_op & ttio_o_amo_wait);
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -427,24 +386,24 @@ module e203_exu_alu(
   wire  [`E203_DECINFO_WIDTH-1:0]  ttio_i_info = {`E203_DECINFO_WIDTH{ttio_op}} & i_info;  
   wire  [`E203_ITAG_WIDTH-1:0]     ttio_i_itag = {`E203_ITAG_WIDTH   {ttio_op}} & i_itag; 
 
-  wire                         ttio_icb_cmd_valid, // Handshake valid
-  wire                          ttio_icb_cmd_ready, // Handshake ready
-  wire [`E203_ADDR_SIZE-1:0]   ttio_icb_cmd_addr, // Bus transaction start addr 
-  wire                         ttio_icb_cmd_read,   // Read or write
-  wire [`E203_XLEN-1:0]        ttio_icb_cmd_wdata, 
-  wire [`E203_XLEN/8-1:0]      ttio_icb_cmd_wmask, 
-  wire                         ttio_icb_cmd_lock,
-  wire                         ttio_icb_cmd_excl,
-  wire [1:0]                   ttio_icb_cmd_size,
-  wire                         ttio_icb_cmd_back2ttio, 
-  wire                         ttio_icb_cmd_usign,
-  wire [`E203_ITAG_WIDTH -1:0] ttio_icb_cmd_itag,
+  wire                         ttio_icb_cmd_valid; // Handshake valid
+  wire                         ttio_icb_cmd_ready; // Handshake ready
+  wire [`E203_ADDR_SIZE-1:0]   ttio_icb_cmd_addr; // Bus transaction start addr 
+  wire                         ttio_icb_cmd_read;   // Read or write
+  wire [`E203_XLEN-1:0]        ttio_icb_cmd_wdata; 
+  wire [`E203_XLEN/8-1:0]      ttio_icb_cmd_wmask; 
+  wire                         ttio_icb_cmd_lock;
+  wire                         ttio_icb_cmd_excl;
+  wire [1:0]                   ttio_icb_cmd_size;
+  wire                         ttio_icb_cmd_back2ttio; 
+  wire                         ttio_icb_cmd_usign;
+  wire [`E203_ITAG_WIDTH -1:0] ttio_icb_cmd_itag;
   //    * Bus RSP channel
-  wire                          ttio_icb_rsp_valid, // Response valid 
-  wire                         ttio_icb_rsp_ready, // Response ready
-  wire                          ttio_icb_rsp_err  , // Response error
-  wire                          ttio_icb_rsp_excl_ok,
-  wire  [`E203_XLEN-1:0]        ttio_icb_rsp_rdata,
+  wire                          ttio_icb_rsp_valid; // Response valid 
+  wire                         ttio_icb_rsp_ready; // Response ready
+  wire                          ttio_icb_rsp_err; // Response error
+  wire                          ttio_icb_rsp_excl_ok;
+  wire  [`E203_XLEN-1:0]        ttio_icb_rsp_rdata;
 
   ttio u_ttio(
 
@@ -547,24 +506,24 @@ module e203_exu_alu(
 
 ////////////////////////////////////////////////////////////////////////////////////////
 `ifdef E203_SUPPORT_TTIO
-  wire                         agu_icb_cmd_valid, // Handshake valid
-  wire                          agu_icb_cmd_ready, // Handshake ready
-  wire [`E203_ADDR_SIZE-1:0]   agu_icb_cmd_addr, // Bus transaction start addr 
-  wire                         agu_icb_cmd_read,   // Read or write
-  wire [`E203_XLEN-1:0]        agu_icb_cmd_wdata, 
-  wire [`E203_XLEN/8-1:0]      agu_icb_cmd_wmask, 
-  wire                         agu_icb_cmd_lock,
-  wire                         agu_icb_cmd_excl,
-  wire [1:0]                   agu_icb_cmd_size,
-  wire                         agu_icb_cmd_back2agu, 
-  wire                         agu_icb_cmd_usign,
-  wire [`E203_ITAG_WIDTH -1:0] agu_icb_cmd_itag,
+  wire                         agu_icb_cmd_valid; // Handshake valid
+  wire                          agu_icb_cmd_ready; // Handshake ready
+  wire [`E203_ADDR_SIZE-1:0]   agu_icb_cmd_addr; // Bus transaction start addr 
+  wire                         agu_icb_cmd_read;   // Read or write
+  wire [`E203_XLEN-1:0]        agu_icb_cmd_wdata; 
+  wire [`E203_XLEN/8-1:0]      agu_icb_cmd_wmask; 
+  wire                         agu_icb_cmd_lock;
+  wire                         agu_icb_cmd_excl;
+  wire [1:0]                   agu_icb_cmd_size;
+  wire                         agu_icb_cmd_back2agu; 
+  wire                         agu_icb_cmd_usign;
+  wire [`E203_ITAG_WIDTH -1:0] agu_icb_cmd_itag;
   //    * Bus RSP channel
-  wire                          agu_icb_rsp_valid, // Response valid 
-  wire                         agu_icb_rsp_ready, // Response ready
-  wire                          agu_icb_rsp_err  , // Response error
-  wire                          agu_icb_rsp_excl_ok,
-  wire  [`E203_XLEN-1:0]        agu_icb_rsp_rdata,
+  wire                          agu_icb_rsp_valid; // Response valid 
+  wire                         agu_icb_rsp_ready; // Response ready
+  wire                          agu_icb_rsp_err; // Response error
+  wire                          agu_icb_rsp_excl_ok;
+  wire  [`E203_XLEN-1:0]        agu_icb_rsp_rdata;
 `endif
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -642,6 +601,53 @@ module e203_exu_alu(
       .clk                 (clk),
       .rst_n               (rst_n)
   );
+
+////////////////////////////////////////////////////////////////////////////////////////
+// icb select
+`ifdef E203_SUPPORT_TTIO
+  
+  assign icb_cmd_valid = (agu_op & agu_icb_cmd_valid) | (ttio_op & ttio_icb_cmd_valid);
+  
+  assign agu_icb_cmd_ready = (icb_cmd_ready & agu_op);
+  assign ttio_icb_cmd_ready = (icb_cmd_ready & ttio_op);
+  
+  assign icb_cmd_valid = (agu_icb_cmd_valid & agu_op) | (ttio_icb_cmd_valid & ttio_op);
+  
+  assign icb_cmd_addr = ({`E203_ADDR_SIZE{agu_op}} & agu_icb_cmd_addr) | ({`E203_ADDR_SIZE{ttio_op}} & ttio_icb_cmd_addr);
+
+  assign icb_cmd_read = (agu_icb_cmd_read & agu_op) | (ttio_icb_cmd_read & ttio_op);
+  
+  assign icb_cmd_wdata = ({`E203_XLEN{agu_op}} & agu_icb_cmd_wdata) | ({`E203_XLEN{ttio_op}} & ttio_icb_cmd_wdata);
+  
+  assign icb_cmd_wmask = ({(`E203_XLEN/8){agu_op}} & agu_icb_cmd_wmask) | ({(`E203_XLEN/8){ttio_op}} & ttio_icb_cmd_wmask);
+  
+  assign icb_cmd_lock = (agu_op & agu_icb_cmd_lock) | (ttio_op & ttio_icb_cmd_lock);
+  
+  assign icb_cmd_excl = (agu_op & agu_icb_cmd_excl) | (ttio_op & ttio_icb_cmd_excl);
+  
+  assign icb_cmd_size = ({2{agu_op}} & agu_icb_cmd_size) | ({2{ttio_op}} & ttio_icb_cmd_size);
+
+  assign icb_cmd_back = (agu_op & agu_icb_cmd_back2agu) | (ttio_op & ttio_icb_cmd_back2ttio);
+
+  assign icb_cmd_usign = (agu_op & agu_icb_cmd_usign) | (ttio_op & ttio_icb_cmd_usign);
+
+  assign icb_cmd_itag = ({`E203_ITAG_WIDTH{agu_op}} & agu_icb_cmd_itag) | ({`E203_ITAG_WIDTH{ttio_op}} & ttio_icb_cmd_itag);
+
+  assign agu_icb_rsp_valid = (icb_rsp_valid & agu_op);
+  assign ttio_icb_rsp_valid = (icb_rsp_valid & ttio_op);
+
+  assign icb_rsp_ready = (agu_op & agu_icb_rsp_ready) | (ttio_op & ttio_icb_rsp_ready);
+
+  assign agu_icb_rsp_err = (icb_rsp_err & agu_op);
+  assign ttio_icb_rsp_err = (icb_rsp_err & ttio_op);
+
+  assign agu_icb_rsp_excl_ok = (icb_rsp_excl_ok & agu_op);
+  assign ttio_icb_rsp_excl_ok = (icb_rsp_excl_ok & ttio_op);
+
+  assign agu_icb_rsp_rdata = (icb_rsp_rdata & {`E203_XLEN{agu_op}});
+  assign ttio_icb_rsp_rdata = (icb_rsp_rdata & {`E203_XLEN{ttio_op}});
+`endif
+////////////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////
   // Instantiate the regular ALU module

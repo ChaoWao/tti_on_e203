@@ -326,21 +326,6 @@ module e203_exu_commit(
 
   assign commit_mret = cmt_mret_ena;
 
-`ifndef FPGA_SOURCE//{
-`ifndef DISABLE_SV_ASSERTION//{
-//synopsys translate_off
-
- `ifndef E203_HAS_LOCKSTEP//{
-CHECK_1HOT_FLUSH_HALT:
-  assert property (@(posedge clk) disable iff (~rst_n)
-                     ($onehot0({wfi_halt_ifu_req,pipe_flush_req}))
-                  )
-  else $fatal ("\n Error: Oops, detected non-onehot0 value for halt and flush req!!! This should never happen. \n");
- `endif//}
-
-//synopsys translate_on
-`endif//}
-`endif//}
 
 endmodule                                      
                                                

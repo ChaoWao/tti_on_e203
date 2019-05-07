@@ -556,6 +556,7 @@ module e203_exu_alu_dpath(
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
       muldiv_req_alu ? muldiv_sbf_0_nxt : 
 `endif//E203_SUPPORT_SHARE_MULDIV}
+                 {1'b0,agu_sbf_0_nxt};
   assign sbf_1_nxt = 
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
       muldiv_req_alu ? muldiv_sbf_1_nxt : 
