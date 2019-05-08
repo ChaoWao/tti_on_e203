@@ -314,6 +314,8 @@ module e203_exu_decode(
   wire rv32_ttiat = rv32_custom0 & rv32_func7_0000100;
   wire rv32_ttoat = rv32_custom0 & rv32_func7_0000101;
 
+  wire ttio_op = rv32_settr | rv32_setti | rv32_getti | rv32_move | rv32_ttiat | rv32_ttoat;
+
   wire [`E203_DECINFO_TTIO_WIDTH-1:0] ttio_info_bus;
   assign ttio_info_bus[`E203_DECINFO_GRP         ]  = `E203_DECINFO_GRP_TTIO;
   assign ttio_info_bus[`E203_DECINFO_RV32        ]  = rv32;
@@ -989,6 +991,9 @@ module e203_exu_decode(
             | ({`E203_DECINFO_WIDTH{bjp_op}}     & {{`E203_DECINFO_WIDTH-`E203_DECINFO_BJP_WIDTH{1'b0}},bjp_info_bus})
             | ({`E203_DECINFO_WIDTH{csr_op}}     & {{`E203_DECINFO_WIDTH-`E203_DECINFO_CSR_WIDTH{1'b0}},csr_info_bus})
             | ({`E203_DECINFO_WIDTH{muldiv_op}}  & {{`E203_DECINFO_WIDTH-`E203_DECINFO_CSR_WIDTH{1'b0}},muldiv_info_bus})
+            `ifdef E203_SUPPORT_TTIO
+            | ({`E203_DECINFO_WIDTH{ttio_op}}  & {{`E203_DECINFO_WIDTH-`E203_DECINFO_TTIO_WIDTH{1'b0}},ttio_info_bus})
+            `endif
               ;
 
 
@@ -998,6 +1003,9 @@ module e203_exu_decode(
             | bjp_op
             | csr_op
             | muldiv_op
+            `ifdef E203_SUPPORT_TTIO
+            | ttio_op
+            `endif
             ;
 
   // To decode the registers for Rv16, divided into 8 groups

@@ -219,14 +219,6 @@ module e203_exu_alu(
 ////////////////////////////////////////////////////////////////////////////////////////
                    ;
 
-////////////////////////////////////////////////////////////////////////////////////////
-`ifdef E203_SUPPORT_TTIO
-  wire ttio_o_amo_wait;
-  wire agu_o_amo_wait;
-  assign amo_wait = (agu_op & agu_o_amo_wait) | (ttio_op & ttio_o_amo_wait);
-`endif
-////////////////////////////////////////////////////////////////////////////////////////
-
   //////////////////////////////////////////////////////////////
   // Instantiate the CSR module
   //
@@ -374,11 +366,6 @@ module e203_exu_alu(
   wire ttio_o_cmt_st; 
   wire ttio_o_cmt_buserr ; 
   wire [`E203_ADDR_SIZE-1:0] ttio_o_cmt_badaddr ; 
-  
-  wire [`E203_XLEN-1:0] ttio_req_alu_op1;
-  wire [`E203_XLEN-1:0] ttio_req_alu_op2;
-  wire ttio_req_alu_add ;
-  wire [`E203_XLEN-1:0] ttio_req_alu_res;
 
   wire  [`E203_XLEN-1:0]           ttio_i_rs1  = {`E203_XLEN         {ttio_op}} & i_rs1;
   wire  [`E203_XLEN-1:0]           ttio_i_rs2  = {`E203_XLEN         {ttio_op}} & i_rs2;
@@ -418,8 +405,6 @@ module e203_exu_alu(
 
       .ttio_i_flush_pulse         (flush_pulse),
       .ttio_i_flush_req           (flush_req),
-      .ttio_o_amo_wait            (ttio_o_amo_wait),
-      .ttio_i_oitf_empty          (oitf_empty),
 
       .ttio_o_valid         (ttio_o_valid         ),
       .ttio_o_ready         (ttio_o_ready         ),
@@ -448,11 +433,6 @@ module e203_exu_alu(
       .ttio_icb_rsp_err     (ttio_icb_rsp_err     ),
       .ttio_icb_rsp_excl_ok (ttio_icb_rsp_excl_ok ),
       .ttio_icb_rsp_rdata   (ttio_icb_rsp_rdata   ),
-                                                
-      .ttio_req_alu_op1     (ttio_req_alu_op1     ),
-      .ttio_req_alu_op2     (ttio_req_alu_op2     ),
-      .ttio_req_alu_add     (ttio_req_alu_add     ),
-      .ttio_req_alu_res     (ttio_req_alu_res     ),
      
       .clk                 (clk),
       .rst_n               (rst_n)
@@ -540,13 +520,7 @@ module e203_exu_alu(
 
       .flush_pulse         (flush_pulse    ),
       .flush_req           (flush_req      ),
-////////////////////////////////////////////////////////////////////////////////////////
-`ifdef E203_SUPPORT_TTIO
-      .amo_wait            (agu_o_amo_wait),
-`else
       .amo_wait            (amo_wait),
-`endif
-////////////////////////////////////////////////////////////////////////////////////////
       .oitf_empty          (oitf_empty),
 
       .agu_o_valid         (agu_o_valid         ),
@@ -832,16 +806,6 @@ module e203_exu_alu(
       .bjp_req_alu_add     (bjp_req_alu_add       ),
       .bjp_req_alu_cmp_res (bjp_req_alu_cmp_res   ),
       .bjp_req_alu_add_res (bjp_req_alu_add_res   ),
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-`ifdef E203_SUPPORT_TTIO             
-      .ttio_req_alu         (ttio_req_alu           ),
-      .ttio_req_alu_op1     (ttio_req_alu_op1       ),
-      .ttio_req_alu_op2     (ttio_req_alu_op2       ),
-      .ttio_req_alu_add     (ttio_req_alu_add       ),
-      .ttio_req_alu_res     (ttio_req_alu_res       ),
-`endif
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       .agu_req_alu         (agu_req_alu           ),
       .agu_req_alu_op1     (agu_req_alu_op1       ),

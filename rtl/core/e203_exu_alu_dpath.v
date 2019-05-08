@@ -91,17 +91,6 @@ module e203_exu_alu_dpath(
   input  [`E203_XLEN-1:0] agu_sbf_1_nxt,
   output [`E203_XLEN-1:0] agu_sbf_1_r,
 
-`ifdef E203_SUPPORT_TTIO
-  // TTIO request the datapath
-  input  ttio_req_alu,
-
-  input  [`E203_XLEN-1:0] ttio_req_alu_op1,
-  input  [`E203_XLEN-1:0] ttio_req_alu_op2,
-  input  ttio_req_alu_add,
-
-  output [`E203_XLEN-1:0] ttio_req_alu_res,
-`endif
-
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
   //////////////////////////////////////////////////////
   // MULDIV request the datapath
@@ -497,44 +486,10 @@ module e203_exu_alu_dpath(
             ,1'b0
             ,1'b0
         })
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-`ifdef E203_SUPPORT_TTIO
-      | ({DPATH_MUX_WIDTH{ttio_req_alu}} & {
-             ttio_req_alu_op1
-            ,ttio_req_alu_op2
-            ,1'b0
-            ,1'b0
-            ,1'b0
-            ,1'b0
-            ,ttio_req_alu_add
-            ,1'b0
-            ,1'b0
-            ,1'b0
-            ,1'b0
-            ,1'b0
-            ,1'b0
-            ,1'b0
-            ,1'b0
-            ,1'b0
-            ,1'b0// SWAP just move-Op2 operation
-            ,1'b0
-            ,1'b0
-            ,1'b0
-            ,1'b0
-            ,1'b0
-            ,1'b0
-        })
-`endif
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ;
         
   assign alu_req_alu_res     = alu_dpath_res[`E203_XLEN-1:0];
   assign agu_req_alu_res     = alu_dpath_res[`E203_XLEN-1:0];
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-`ifdef E203_SUPPORT_TTIO
-  assign ttio_req_alu_res = alu_dpath_res[`E203_XLEN-1:0];
-`endif
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
   assign bjp_req_alu_add_res = alu_dpath_res[`E203_XLEN-1:0];
   assign bjp_req_alu_cmp_res = cmp_res;
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
